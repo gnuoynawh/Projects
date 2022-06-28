@@ -1,56 +1,43 @@
-package com.gnuoynawh.exam.calendar
+package com.gnuoynawh.exam.ticketcrawlingexam
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
+import com.bumptech.glide.Glide
+import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
 import java.util.*
 
-class CalendarAdapter(
+class TicketAdapter(
     var context: Context,
-    var list: ArrayList<Date>,
-    var events: ArrayList<Ticket>,
-    var today: Date)
-    : RecyclerView.Adapter<CalendarAdapter.CalendarCellView>() {
+    var list: ArrayList<Ticket>
+): RecyclerView.Adapter<TicketAdapter.TicketView>() {
 
     override fun getItemCount(): Int {
         return list.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CalendarCellView {
-        val layout =  LayoutInflater.from(context).inflate(R.layout.row_calendar, parent, false)
-        return CalendarCellView(layout)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TicketView {
+        val layout =  LayoutInflater.from(context).inflate(R.layout.row_ticket, parent, false)
+        return TicketView(layout)
     }
 
-    override fun onBindViewHolder(holder: CalendarCellView, position: Int) {
-        val date: Date = list[position]
-        val thisMonth = today.year.equals(date.year) && today.month.equals(date.month)
+    override fun onBindViewHolder(holder: TicketView, position: Int) {
+        val ticket: Ticket = list[position]
 
-        // 날짜
-        holder.tvDay.text = date.date.toString()
-        holder.tvDay.setTextColor(if(thisMonth) Color.BLACK
-                                  else          Color.GRAY)
+        // image
+        Glide.with(context)
+            .load(ticket.thumb)
+            .into(holder.ivThumb)
 
-        // 이미지
-        holder.ivThumb.visibility = View.INVISIBLE
-        events.forEachIndexed { _, ticket ->
-            if (isSameDay(date, ticket.date)) {
-                holder.ivThumb.visibility = View.VISIBLE
-                holder.ivThumb.setImageResource(ticket.img)
-
-                if(!thisMonth)
-                    holder.ivThumb.alpha = 0.5f
-
-                holder.tvDay.setTextColor(Color.WHITE)
-            }
-        }
+        // inform
+        holder.tvTitle.text = ticket.title
+        holder.tvDate.text = ticket.date
+        holder.tvPlace.text = ticket.place
+        holder.tvNumber.text = ticket.number
 
         // 리스너
         holder.itemView.setOnClickListener {
@@ -58,37 +45,21 @@ class CalendarAdapter(
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun isSameDay(date1: Date, date2: Date): Boolean {
-        val fmt = SimpleDateFormat("yyyyMMdd")
-        return fmt.format(date1).equals(fmt.format(date2))
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public fun updateData(list: ArrayList<Date>, today: Date) {
-        this.today = today
-        this.list = list
-        this.notifyDataSetChanged()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public fun updateEvents(events: ArrayList<Ticket>) {
-        this.events = events
-        this.notifyDataSetChanged()
-    }
-
-    interface OnDateClickListener {
+    interface OnItemClickListener {
         fun onClick(v: View, position: Int)
     }
 
-    private var listener: OnDateClickListener? = null
+    private var listener: OnItemClickListener? = null
 
-    public fun setOnDateClickListener(listener: OnDateClickListener) {
+    public fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }
 
-    class CalendarCellView(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvDay: AppCompatTextView = itemView.findViewById(R.id.tv_date)
+    class TicketView(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivThumb: AppCompatImageView = itemView.findViewById(R.id.iv_thumb)
+        val tvTitle: AppCompatTextView = itemView.findViewById(R.id.tv_title)
+        val tvDate: AppCompatTextView = itemView.findViewById(R.id.tv_date)
+        val tvPlace: AppCompatTextView = itemView.findViewById(R.id.tv_place)
+        val tvNumber: AppCompatTextView = itemView.findViewById(R.id.tv_number)
     }
 }
