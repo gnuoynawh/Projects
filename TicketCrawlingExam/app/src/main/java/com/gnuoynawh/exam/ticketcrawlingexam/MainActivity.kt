@@ -9,6 +9,11 @@ import com.gnuoynawh.exam.ticketcrawlingexam.data.Site
 
 class MainActivity  : AppCompatActivity(), View.OnClickListener {
 
+    /**
+     * Todo
+     *  - 티켓링크 : 예약정보가 없음... ㅠㅠ
+     *  - 예스24 : 10개 넘어갈때 페이징처리, 장소정보가 없음
+     */
     lateinit var btn1: AppCompatButton
     lateinit var btn2: AppCompatButton
     lateinit var btn3: AppCompatButton

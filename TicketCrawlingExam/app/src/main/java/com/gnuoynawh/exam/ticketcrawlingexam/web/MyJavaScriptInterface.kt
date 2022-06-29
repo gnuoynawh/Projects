@@ -14,14 +14,41 @@ class MyJavaScriptInterface(
 ) {
 
     @JavascriptInterface
-    fun getTicketLinkBookList(html: String) {
+    fun getInterParkBookList(html: String) {
 
-    }
+        val list = ArrayList<Ticket>()
 
+        // body 전체파싱
+        val doc: Document = Jsoup.parse(html)
 
-    @JavascriptInterface
-    fun getYes24BookList(html: String) {
+        // 예매리스트
+        val bookList = doc.getElementById("itemList")
+        val books = bookList?.select("li")
 
+        books?.forEachIndexed { index, element ->
+            Log.e("TEST", "books [$index] all = ${element.text()}")
+
+            val ticket: Ticket = Ticket()
+            ticket.title = element.select("div.nameWrap p").text()
+            ticket.number = element.select("div.nameWrap span").text()
+            ticket.thumb = element.select("span.img").select("img").attr("src")
+
+            // 상세정보
+            val informs = element.select("span.prodInfoWrap").select("dl")
+            informs.forEachIndexed { _, data ->
+
+                val title = data.select("dt").text()
+                val contents = data.select("dd").text()
+
+                when(title) {
+                    "관람일시" -> ticket.date = contents
+                    "장소" -> ticket.place = contents
+                }
+            }
+            list.add(ticket)
+        }
+
+        activity.onResult(list)
     }
 
     @JavascriptInterface
@@ -62,7 +89,7 @@ class MyJavaScriptInterface(
     }
 
     @JavascriptInterface
-    fun getInterParkBookList(html: String) {
+    fun getTicketLinkBookList(html: String) {
 
         val list = ArrayList<Ticket>()
 
@@ -75,14 +102,30 @@ class MyJavaScriptInterface(
 
         books?.forEachIndexed { index, element ->
             Log.e("TEST", "books [$index] all = ${element.text()}")
+        }
+    }
+
+    @JavascriptInterface
+    fun getYes24BookList(html: String) {
+
+        val list = ArrayList<Ticket>()
+
+        // body 전체파싱
+        val doc: Document = Jsoup.parse(html)
+
+        // 예매리스트
+        val bookList = doc.getElementById("BoardList")
+        val books = bookList?.select("li")
+
+        books?.forEachIndexed { index, element ->
+            Log.e("TEST", "books [$index] all = ${element.text()}")
 
             val ticket: Ticket = Ticket()
-            ticket.title = element.select("div.nameWrap p").text()
-            ticket.number = element.select("div.nameWrap span").text()
-            ticket.thumb = element.select("span.img").select("img").attr("src")
+            ticket.title = element.select("p.goods_name").text()
+            ticket.thumb = element.select("div.goods_img img").attr("src")
 
             // 상세정보
-            val informs = element.select("span.prodInfoWrap").select("dl")
+            val informs = element.select("div.goods_infoUnitArea dl")
             informs.forEachIndexed { _, data ->
 
                 val title = data.select("dt").text()
@@ -90,7 +133,8 @@ class MyJavaScriptInterface(
 
                 when(title) {
                     "관람일시" -> ticket.date = contents
-                    "장소" -> ticket.place = contents
+                    // "공연장소" -> ticket.place = contents
+                    "매수" -> ticket.number = contents
                 }
             }
             list.add(ticket)
@@ -98,4 +142,5 @@ class MyJavaScriptInterface(
 
         activity.onResult(list)
     }
+
 }

@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textColor="@color/black"
-            android:text="제목"
+            android:text="뮤지컬 데스노트 (Death Note)"
             android:textStyle="bold"/>
 
         <LinearLayout
@@ -39,6 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -48,15 +49,16 @@
                 android:gravity="end"
                 android:textSize="14sp"
                 android:textColor="@color/black"
-                android:text="날짜"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:text="날짜"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:text="2022.06.11"/>
         </LinearLayout>
 
         <LinearLayout
@@ -64,6 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -73,15 +76,16 @@
                 android:gravity="end"
                 android:textSize="14sp"
                 android:textColor="@color/black"
-                android:text="장소"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:text="장소"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_place"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:text="충무아트센터"/>
         </LinearLayout>
 
         <LinearLayout
@@ -89,6 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -98,15 +103,16 @@
                 android:gravity="end"
                 android:textSize="14sp"
                 android:textColor="@color/black"
-                android:text="매수"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:text="매수"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:text="1매"/>
         </LinearLayout>
 
     </LinearLayout>

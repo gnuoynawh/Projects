@@ -17,6 +17,7 @@ import com.gnuoynawh.exam.ticketcrawlingexam.web.MyWebViewClient
 
 class WebViewActivity: AppCompatActivity(), View.OnClickListener {
 
+    lateinit var btn: AppCompatButton
     lateinit var btn1: AppCompatButton
     lateinit var btn2: AppCompatButton
     lateinit var btn3: AppCompatButton
@@ -24,8 +25,9 @@ class WebViewActivity: AppCompatActivity(), View.OnClickListener {
 
     lateinit var siteType: Site
 
+    private var mainUrl = ""
     private var loginUrl = ""
-    private var myUrl = ""
+    private var loginResultUrl = ""
     private var bookListUrl = ""
     private var seachScript = ""
     private var parseScript = ""
@@ -37,15 +39,17 @@ class WebViewActivity: AppCompatActivity(), View.OnClickListener {
         siteType = intent.getSerializableExtra("site") as Site
         updateData()
 
+        btn = findViewById(R.id.btn)
         btn1 = findViewById(R.id.btn_1)
         btn2 = findViewById(R.id.btn_2)
         btn3 = findViewById(R.id.btn_3)
+        btn.setOnClickListener(this)
         btn1.setOnClickListener(this)
         btn2.setOnClickListener(this)
         btn3.setOnClickListener(this)
 
         webView = findViewById(R.id.webView)
-        initWebView(loginUrl)
+        initWebView(mainUrl)
     }
 
     override fun onDestroy() {
@@ -55,6 +59,7 @@ class WebViewActivity: AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
+            R.id.btn -> webView.loadUrl(loginUrl)
             R.id.btn_1 -> webView.loadUrl(bookListUrl)
             R.id.btn_2 -> webView.loadUrl(seachScript)
             R.id.btn_3 -> webView.loadUrl(parseScript)
@@ -65,7 +70,7 @@ class WebViewActivity: AppCompatActivity(), View.OnClickListener {
         when(siteType) {
             Site.InterPark -> {
                 loginUrl = "https://accounts.interpark.com/login/form"
-                myUrl = "http://m.shop.interpark.com/"
+                loginResultUrl = "http://m.shop.interpark.com/"
                     // "https://smshop.interpark.com/my/shop/index.html"
                     // "http://mticket.interpark.com/MyTicket/"
                 bookListUrl = "https://mticket.interpark.com/MyPage/BookedList?PeriodSearch=03#"
@@ -77,25 +82,35 @@ class WebViewActivity: AppCompatActivity(), View.OnClickListener {
                         "loadReserveList()\n" +
                         "}"
                 parseScript = "javascript:window.Android.getInterParkBookList(document.getElementsByTagName('body')[0].innerHTML);"
+                mainUrl = loginUrl
             }
             Site.Melon -> {
                 loginUrl = "https://member.melon.com/muid/family/ticket/login/mobile/login_inform.htm?cpId=IX25&returnPage=https%3A//m.ticket.melon.com/main/index.htm"
-                myUrl = "https://m.ticket.melon.com/main/index.htm"
+                loginResultUrl = "https://m.ticket.melon.com/main/index.htm"
                 bookListUrl = "https://m.ticket.melon.com/myticket/rsrvList.htm"
                 seachScript = "javascript:getRsrvList(24)"
                 parseScript = "javascript:window.Android.getMelonBookList(document.getElementsByTagName('body')[0].innerHTML);"
+                mainUrl = loginUrl
             }
             Site.TicketLink -> {
-                loginUrl = ""
-                bookListUrl = ""
-                seachScript = ""
-                parseScript = ""
+                loginUrl = "javascript:document.getElementById('loginBtn').click()"
+                bookListUrl = "http://m.ticketlink.co.kr/my/reserve/list"
+                seachScript = "http://m.ticketlink.co.kr/my/reserve/list?page=1&productClass=ALL&searchType=PERIOD&period=MONTH_3&targetDay=RESERVE&year=&month="
+                parseScript = "javascript:window.Android.getTicketLinkBookList(document.getElementsByTagName('body')[0].innerHTML);"
+                mainUrl = "http://m.ticketlink.co.kr/"
             }
             Site.Yes24 -> {
-                loginUrl = ""
-                bookListUrl = ""
-                seachScript = ""
-                parseScript = ""
+                loginUrl = "javascript:jsf_base_GoYes24Login('');"
+                loginResultUrl = "http://m.ticket.yes24.com/Main.aspx"
+                bookListUrl = "http://m.ticket.yes24.com/MyPage/WatchList.aspx"
+                seachScript = "javascript:" +
+                        "var from = document.getElementById('ddlSearchFrom');\n" +
+                        "var to = document.getElementById('ddlSearchTo');\n" +
+                        "from.selectedIndex = 1;\n" +
+                        "to.selectedIndex = 0;\n"+
+                        "document.querySelector('.btn_c.btn_gray').click();"
+                parseScript = "javascript:window.Android.getYes24BookList(document.getElementsByTagName('body')[0].innerHTML);"
+                mainUrl = "http://m.ticket.yes24.com/"
             }
         }
     }
