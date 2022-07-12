@@ -31,13 +31,14 @@ class TicketAdapter(
         // image
         Glide.with(context)
             .load(ticket.thumb)
+            .error(R.drawable.ic_launcher_foreground)
             .into(holder.ivThumb)
 
         // inform
         holder.tvTitle.text = ticket.title
         holder.tvDate.text = ticket.date
         holder.tvPlace.text = ticket.place
-        holder.tvNumber.text = ticket.number
+        holder.tvNumber.text = ticket.count
 
         // 리스너
         holder.itemView.setOnClickListener {

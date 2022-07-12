@@ -30,7 +30,7 @@ class MyJavaScriptInterface(
 
             val ticket: Ticket = Ticket()
             ticket.title = element.select("div.nameWrap p").text()
-            ticket.number = element.select("div.nameWrap span").text()
+            ticket.count = element.select("div.nameWrap span").text()
             ticket.thumb = element.select("span.img").select("img").attr("src")
 
             // 상세정보
@@ -41,6 +41,7 @@ class MyJavaScriptInterface(
                 val contents = data.select("dd").text()
 
                 when(title) {
+                    "예매번호" -> ticket.number = contents
                     "관람일시" -> ticket.date = contents
                     "장소" -> ticket.place = contents
                 }
@@ -77,9 +78,10 @@ class MyJavaScriptInterface(
                 val contents = data.select("dd").text()
 
                 when(title) {
+                    "예매번호" -> ticket.number = contents
                     "관람일" -> ticket.date = contents
                     "공연장소" -> ticket.place = contents
-                    "매수" -> ticket.number = contents
+                    "매수" -> ticket.count = contents
                 }
             }
             list.add(ticket)
@@ -97,12 +99,45 @@ class MyJavaScriptInterface(
         val doc: Document = Jsoup.parse(html)
 
         // 예매리스트
-        val bookList = doc.getElementById("itemList")
-        val books = bookList?.select("li")
+        val detailList = doc.getElementsByClass("detail_cont")
+        val detail = detailList?.select("ul.reserve_detail")
 
-        books?.forEachIndexed { index, element ->
-            Log.e("TEST", "books [$index] all = ${element.text()}")
+        Log.e("TEST", "detailList size = ${detailList?.size}")
+        detail?.forEachIndexed { index, element ->
+            Log.e("TEST", "detail [$index]")
+
+            // 아래 스크롤
+            // window.scrollTo(0, document.body.scrollHeight);
+            
+            val book = element?.select("a")
+            book?.forEachIndexed { index1, element1 ->
+
+                val ticket = Ticket()
+                ticket.title = element1.select("h4.tit").text()
+
+                Log.e("TEST", "book [$index1] = ${ticket.title}")
+
+                val informs = element1.select("ul.reserve_info li")
+                informs.forEachIndexed { index2, element2 ->
+                    Log.e("TEST", "informs [$index2] all = ${element2.text()}")
+
+                    val title = element2.select("s_tit").text()
+                    val contents = element2.select("ng-binding").text()
+
+                    when(title) {
+                        "예약번호" -> ticket.number = contents
+                        "관람일시" -> ticket.date = contents
+                        // "공연장소" -> ticket.place = contents
+                        "티켓" -> ticket.count = contents
+                        "현재상태" -> ticket.state = contents
+                    }
+                }
+                list.add(ticket)
+            }
         }
+
+        Log.e("TEST", "list [${list.size}]")
+        //activity.onResult(list)
     }
 
     @JavascriptInterface
@@ -132,9 +167,10 @@ class MyJavaScriptInterface(
                 val contents = data.select("dd").text()
 
                 when(title) {
+                    "예매번호" -> ticket.number = contents
                     "관람일시" -> ticket.date = contents
                     // "공연장소" -> ticket.place = contents
-                    "매수" -> ticket.number = contents
+                    "매수" -> ticket.count = contents
                 }
             }
             list.add(ticket)
