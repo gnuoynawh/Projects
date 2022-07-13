@@ -31,14 +31,15 @@ class TicketAdapter(
         // image
         Glide.with(context)
             .load(ticket.thumb)
-            .error(R.drawable.ic_launcher_foreground)
+            .error(R.color.black)
             .into(holder.ivThumb)
 
         // inform
+        holder.tvNumber.text = ticket.number
         holder.tvTitle.text = ticket.title
         holder.tvDate.text = ticket.date
         holder.tvPlace.text = ticket.place
-        holder.tvNumber.text = ticket.count
+        holder.tvCount.text = ticket.count
 
         // 리스너
         holder.itemView.setOnClickListener {
@@ -58,9 +59,10 @@ class TicketAdapter(
 
     class TicketView(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivThumb: AppCompatImageView = itemView.findViewById(R.id.iv_thumb)
+        val tvNumber: AppCompatTextView = itemView.findViewById(R.id.tv_number)
         val tvTitle: AppCompatTextView = itemView.findViewById(R.id.tv_title)
         val tvDate: AppCompatTextView = itemView.findViewById(R.id.tv_date)
         val tvPlace: AppCompatTextView = itemView.findViewById(R.id.tv_place)
-        val tvNumber: AppCompatTextView = itemView.findViewById(R.id.tv_number)
+        val tvCount: AppCompatTextView = itemView.findViewById(R.id.tv_count)
     }
 }

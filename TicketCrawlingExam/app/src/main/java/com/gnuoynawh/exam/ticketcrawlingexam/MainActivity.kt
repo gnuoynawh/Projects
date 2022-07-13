@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import com.gnuoynawh.exam.ticketcrawlingexam.data.Site
+import com.gnuoynawh.exam.ticketcrawlingexam.data.SiteType
 
 class MainActivity  : AppCompatActivity(), View.OnClickListener {
 
@@ -37,10 +38,10 @@ class MainActivity  : AppCompatActivity(), View.OnClickListener {
         val intent = Intent(this, WebViewActivity::class.java)
 
         when (v.id) {
-            R.id.btn_1 -> intent.putExtra("site", Site.InterPark)
-            R.id.btn_2 -> intent.putExtra("site", Site.Melon)
-            R.id.btn_3 -> intent.putExtra("site", Site.TicketLink)
-            R.id.btn_4 -> intent.putExtra("site", Site.Yes24)
+            R.id.btn_1 -> intent.putExtra("site", SiteType.InterPark)
+            R.id.btn_2 -> intent.putExtra("site", SiteType.Melon)
+            R.id.btn_3 -> intent.putExtra("site", SiteType.TicketLink)
+            R.id.btn_4 -> intent.putExtra("site", SiteType.Yes24)
         }
 
         startActivity(intent)

@@ -32,13 +32,41 @@
             android:textSize="16sp"
             android:textColor="@color/black"
             android:text="뮤지컬 데스노트 (Death Note)"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:lines="2"/>
+
+        <LinearLayout
+            android:id="@+id/ll_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:gravity="end"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:text="예매번호"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="M1010101010"/>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -89,7 +117,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ll_number"
+            android:id="@+id/ll_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -107,7 +135,7 @@
                 android:text="매수"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_number"
+                android:id="@+id/tv_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"

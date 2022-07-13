@@ -5,13 +5,36 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
 import com.gnuoynawh.exam.ticketcrawlingexam.WebViewActivity
+import com.gnuoynawh.exam.ticketcrawlingexam.data.Site
+import com.gnuoynawh.exam.ticketcrawlingexam.data.TicketLink
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 class MyJavaScriptInterface(
     private val activity: WebViewActivity,
-    private val wv: WebView
+    private val wv: WebView,
+    private val site: Site
 ) {
+
+    private fun verifyDuplicate(number: String, list: ArrayList<Ticket>) : Boolean {
+        list.forEachIndexed { index, ticket ->
+            if (ticket.number == number)
+                return true
+        }
+
+        return false
+    }
+
+
+    @JavascriptInterface
+    fun goNextStep() {
+        site.goNextStep()
+    }
+
+    @JavascriptInterface
+    fun stop() {
+        site.stop()
+    }
 
     @JavascriptInterface
     fun getInterParkBookList(html: String) {
@@ -92,52 +115,7 @@ class MyJavaScriptInterface(
 
     @JavascriptInterface
     fun getTicketLinkBookList(html: String) {
-
-        val list = ArrayList<Ticket>()
-
-        // body 전체파싱
-        val doc: Document = Jsoup.parse(html)
-
-        // 예매리스트
-        val detailList = doc.getElementsByClass("detail_cont")
-        val detail = detailList?.select("ul.reserve_detail")
-
-        Log.e("TEST", "detailList size = ${detailList?.size}")
-        detail?.forEachIndexed { index, element ->
-            Log.e("TEST", "detail [$index]")
-
-            // 아래 스크롤
-            // window.scrollTo(0, document.body.scrollHeight);
-            
-            val book = element?.select("a")
-            book?.forEachIndexed { index1, element1 ->
-
-                val ticket = Ticket()
-                ticket.title = element1.select("h4.tit").text()
-
-                Log.e("TEST", "book [$index1] = ${ticket.title}")
-
-                val informs = element1.select("ul.reserve_info li")
-                informs.forEachIndexed { index2, element2 ->
-                    Log.e("TEST", "informs [$index2] all = ${element2.text()}")
-
-                    val title = element2.select("s_tit").text()
-                    val contents = element2.select("ng-binding").text()
-
-                    when(title) {
-                        "예약번호" -> ticket.number = contents
-                        "관람일시" -> ticket.date = contents
-                        // "공연장소" -> ticket.place = contents
-                        "티켓" -> ticket.count = contents
-                        "현재상태" -> ticket.state = contents
-                    }
-                }
-                list.add(ticket)
-            }
-        }
-
-        Log.e("TEST", "list [${list.size}]")
-        //activity.onResult(list)
+        activity.onResult(site.getBookList(html))
     }
 
     @JavascriptInterface
