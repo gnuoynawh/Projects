@@ -1,16 +1,18 @@
-package com.gnuoynawh.exam.ticketcrawlingexam.data
+package com.gnuoynawh.exam.ticketcrawlingexam.site
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.webkit.WebView
+import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-class TicketLink : Site() {
+class TicketLink: Site() {
 
     override val type: SiteType
         get() = SiteType.TicketLink
+
+    override val mainUrl: String
+        get() = "https://m.ticketlink.co.kr/"
 
     override val loginUrl: String
         get() = "javascript:" +
@@ -19,27 +21,28 @@ class TicketLink : Site() {
                         "window.Android.goNextStep();" +
                     "}, 100);"
 
-    override val bookListUrl: String
-        get() = "http://m.ticketlink.co.kr/my/reserve/list?page=1&productClass=ALL&searchType=PERIOD&period=MONTH_3&targetDay=RESERVE&year=&month="
+    override val loginResultUrl: String
+        get() = mainUrl
 
-    override val seachScript: String
-        get() = "javascript:" +
-                    "window.Android.stop();\n" +
-                    "for (var i = 2; i < 10; i++) {\n" +
-                        "setTimeout(function(){\n " +
-                            "window.scrollTo(0, document.body.scrollHeight);" +
-                            "if (i == 9) window.Android.goNextStep();" +
-                        "}, 300);" +
-                    "}"
+    override val bookListUrl: String
+        get() = "https://m.ticketlink.co.kr/my/reserve/list?page=1&productClass=ALL&searchType=PERIOD&period=MONTH_3&targetDay=RESERVE&year=&month="
 
     override val parseScript: String
-        get() = "javascript:window.Android.getTicketLinkBookList(document.getElementsByTagName('body')[0].innerHTML);"
-
-    override val mainUrl: String
-        get() = "http://m.ticketlink.co.kr/"
-
+        get() = "javascript:" +
+                    "for (var i = 1; i <= 5; i++) {" +
+                        "var j = 0; " +
+                        "setTimeout(function(){ " +
+                            "window.scrollTo(0, document.body.scrollHeight);" +
+                            "j++;" +
+                            "console.log('j = ' + j);" +
+                            "if (j == 5) " +
+                                "window.Android.getBookList(document.getElementsByTagName('body')[0].innerHTML);" +
+                        "}, 2000 * i);" +
+                    "}"
 
     override fun getBookList(html: String): ArrayList<Ticket> {
+
+        Log.e("TEST", "getBookList()")
 
         val list = ArrayList<Ticket>()
 
@@ -93,26 +96,31 @@ class TicketLink : Site() {
     }
 
     override fun goLoginPage(webView: WebView) {
-        Log.e("TEST", "goLoginPage()!!!!")
         webView.loadUrl(loginUrl)
     }
 
     override fun goBookListPage(webView: WebView) {
-        Log.e("TEST", "goBookListPage()!!!!")
         webView.loadUrl(bookListUrl)
-        goNextStep()
+        step = SiteStep.BookList
     }
 
-    override fun searchBookList(webView: WebView) {
-        Log.e("TEST", "searchBookList()!!!!")
-        webView.loadUrl(seachScript)
-    }
-
-    override fun parseBookList(webView: WebView) {
-        Log.e("TEST", "parseBookList()!!!!")
+    override fun getBookList(webView: WebView) {
         webView.loadUrl(parseScript)
-        goNextStep()
+        step = SiteStep.Parse
     }
 
+    override fun verifyDuplicate(ticket: Ticket, list: ArrayList<Ticket>) : Boolean {
 
+        // 예매 취소면 제외
+        if (ticket.state.contains("취소"))
+            return true
+
+        // 이미 추가된 리스트일 경우 제외
+        list.forEachIndexed { _, item ->
+            if (item.number == ticket.number)
+                return true
+        }
+
+        return false
+    }
 }

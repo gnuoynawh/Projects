@@ -4,15 +4,15 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.net.http.SslError
-import android.os.Handler
-import android.os.Looper
+import android.util.Log
+import android.webkit.CookieManager
 import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.gnuoynawh.exam.ticketcrawlingexam.WebViewActivity
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Site
-import com.gnuoynawh.exam.ticketcrawlingexam.data.SiteStep
-import com.gnuoynawh.exam.ticketcrawlingexam.data.SiteType
+import com.gnuoynawh.exam.ticketcrawlingexam.site.Site
+import com.gnuoynawh.exam.ticketcrawlingexam.site.SiteStep
+import com.gnuoynawh.exam.ticketcrawlingexam.site.SiteType
 
 class MyWebViewClient(
     private val activity: WebViewActivity,
@@ -24,28 +24,60 @@ class MyWebViewClient(
         super.onPageStarted(view, url, favicon)
     }
 
-    var delay: Long = 2000
-
     override fun onPageFinished(view: WebView?, url: String?) {
         super.onPageFinished(view, url)
 
-//        if (site.step == SiteStep.Main)
-//            delay = 10
-        if (site.stop)
-            return
+        Log.e("TEST", "onPageFinished() : $url")
 
-        Handler(Looper.myLooper()!!).postDelayed({
-            when(site.step) {
-                SiteStep.Main -> {
-                    site.goLoginPage(webView)
-                    //delay = 2000
+        if (site.step == SiteStep.None && url?.contains(site.mainUrl) == true) {
+
+            // 메인페이지 -> 로그인페이지로 이동
+            site.goLoginPage(webView)
+
+        } else if (site.step == SiteStep.Main) {
+
+            // 로그인 페이지
+            activity.hideLoading()
+            site.goNextStep()
+
+        } else if (site.step == SiteStep.Login && checkLoginResult(url)) {
+
+            // 로그인 성공 체크 -> 예매내역 페이지로 이동
+            activity.showLoading()
+            site.goBookListPage(webView)
+
+        } else if (site.step == SiteStep.BookList) {
+
+            // 예매내역 조회 -> html 파싱
+            site.getBookList(webView)
+
+        }
+    }
+
+    private fun checkLoginResult(url: String?): Boolean {
+        return when(site.type) {
+            SiteType.InterPark,
+            SiteType.Melon,
+            SiteType.TicketLink -> url?.contains(site.loginResultUrl) == true
+            SiteType.Yes24-> getCookie(url, "YesTicket").isNotEmpty()
+        }
+    }
+
+    private fun getCookie(url: String?, cookieName: String): String {
+        var cookieValue = ""
+        val cookieManager = CookieManager.getInstance()
+        val cookies = cookieManager.getCookie(url)
+        if (cookies != null) {
+            val temp = cookies.split(";")
+            for (arg in temp) {
+                if (arg.contains(cookieName)) {
+                    val value = arg.split("=")
+                    cookieValue = value[1]
+                    break
                 }
-                SiteStep.Login -> site.goBookListPage(webView)
-//                SiteStep.BookList -> site.searchBookList(webView)
-//                SiteStep.Search -> site.parseBookList(webView)
-//                SiteStep.Parse -> activity.hideLoading()
             }
-        }, delay)
+        }
+        return cookieValue
     }
 
     @SuppressLint("WebViewClientOnReceivedSslError")

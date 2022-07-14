@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.AppCompatButton
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Site
-import com.gnuoynawh.exam.ticketcrawlingexam.data.SiteType
+import com.gnuoynawh.exam.ticketcrawlingexam.site.SiteType
 
 class MainActivity  : AppCompatActivity(), View.OnClickListener {
 

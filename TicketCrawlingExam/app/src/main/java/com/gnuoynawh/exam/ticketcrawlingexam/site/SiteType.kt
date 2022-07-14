@@ -1,4 +1,4 @@
-package com.gnuoynawh.exam.ticketcrawlingexam.data
+package com.gnuoynawh.exam.ticketcrawlingexam.site
 
 enum class SiteType {
     InterPark,
