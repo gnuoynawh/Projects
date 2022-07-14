@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,14 +40,24 @@ class CalendarAdapter(
                                   else          Color.GRAY)
 
         // 이미지
-        holder.ivThumb.visibility = View.INVISIBLE
+        holder.layoutLeft.visibility = View.INVISIBLE
+        holder.layoutRight.visibility = View.GONE
+
         events.forEachIndexed { _, ticket ->
             if (isSameDay(date, ticket.date)) {
-                holder.ivThumb.visibility = View.VISIBLE
-                holder.ivThumb.setImageResource(ticket.img)
 
-                if(!thisMonth)
-                    holder.ivThumb.alpha = 0.5f
+                if (holder.layoutLeft.visibility == View.INVISIBLE) {
+                    holder.layoutLeft.visibility = View.VISIBLE
+                    holder.ivThumbLeft.setImageResource(ticket.img)
+                } else {
+                    holder.layoutRight.visibility = View.VISIBLE
+                    holder.ivThumbRight.setImageResource(ticket.img)
+                }
+
+                if(!thisMonth) {
+                    holder.ivThumbLeft.alpha = 0.5f
+                    holder.ivThumbRight.alpha = 0.5f
+                }
 
                 holder.tvDay.setTextColor(Color.WHITE)
             }
@@ -89,6 +100,9 @@ class CalendarAdapter(
 
     class CalendarCellView(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDay: AppCompatTextView = itemView.findViewById(R.id.tv_date)
-        val ivThumb: AppCompatImageView = itemView.findViewById(R.id.iv_thumb)
+        val layoutLeft: ConstraintLayout = itemView.findViewById(R.id.layout_left)
+        val layoutRight: ConstraintLayout = itemView.findViewById(R.id.layout_right)
+        val ivThumbLeft: AppCompatImageView = itemView.findViewById(R.id.iv_thumb_left)
+        val ivThumbRight: AppCompatImageView = itemView.findViewById(R.id.iv_thumb_right)
     }
 }

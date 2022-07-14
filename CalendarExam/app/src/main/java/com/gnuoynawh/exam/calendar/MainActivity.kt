@@ -92,6 +92,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         events.add(Ticket(cal.time, R.drawable.img_kinky_boots))
 
         cal.set(2022, Calendar.JUNE, 25)
+        events.add(Ticket(cal.time, R.drawable.img_death_note))
+
+        cal.set(2022, Calendar.JUNE, 25)
         events.add(Ticket(cal.time, R.drawable.img_man_who_laughs))
 
         dateAdapter.updateEvents(events)
