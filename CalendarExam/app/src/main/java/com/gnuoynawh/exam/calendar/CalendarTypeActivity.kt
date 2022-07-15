@@ -2,26 +2,26 @@ package com.gnuoynawh.exam.calendar
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.*
+import com.gnuoynawh.exam.calendar.adapter.CalendarAdapter
+import com.gnuoynawh.exam.calendar.adapter.CalendarTypeAdapter
+import com.gnuoynawh.exam.calendar.data.Ticket
+import com.gnuoynawh.exam.calendar.view.TypeImageView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class CalendarTypeActivity : AppCompatActivity(), View.OnClickListener {
 
     private val currentDate = Calendar.getInstance()
     private val DAYS_COUNT = 42
@@ -29,15 +29,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var dateList: ArrayList<Date> = ArrayList<Date>()
     private var events: ArrayList<Ticket> = ArrayList<Ticket>()
     private lateinit var recyclerView: RecyclerView
-    private lateinit var dateAdapter: CalendarAdapter
+    private lateinit var dateAdapter: CalendarTypeAdapter
 
     private lateinit var tvTitle: AppCompatTextView
     private lateinit var btnPrevious: AppCompatImageButton
     private lateinit var btnNext: AppCompatImageButton
 
+    private lateinit var btnVertical: AppCompatButton
+    private lateinit var btnHorizontal: AppCompatButton
+    private lateinit var btnDiagonal: AppCompatButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_calendar_type)
 
         tvTitle = findViewById(R.id.tv_title)
         btnPrevious = findViewById(R.id.btn_previous)
@@ -46,15 +50,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnNext.setOnClickListener(this)
         recyclerView = findViewById(R.id.recyclerview)
 
+        btnVertical = findViewById(R.id.btn_vertical)
+        btnVertical.setOnClickListener(this)
+        btnHorizontal = findViewById(R.id.btn_horizontal)
+        btnHorizontal.setOnClickListener(this)
+        btnDiagonal = findViewById(R.id.btn_diagonal)
+        btnDiagonal.setOnClickListener(this)
+
         initRecyclerView()
         updateCalendar()
         updateEvents()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onClick(v: View) {
         when(v.id) {
             R.id.btn_previous -> changeCurrentDate(-1)
             R.id.btn_next -> changeCurrentDate(1)
+            R.id.btn_vertical -> {
+                dateAdapter.setDrawType(TypeImageView.DrawType.VERTICAL)
+                dateAdapter.notifyDataSetChanged()
+            }
+            R.id.btn_horizontal -> {
+                dateAdapter.setDrawType(TypeImageView.DrawType.HORIZONTAL)
+                dateAdapter.notifyDataSetChanged()
+            }
+            R.id.btn_diagonal -> {
+                dateAdapter.setDrawType(TypeImageView.DrawType.DIAGONAL)
+                dateAdapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -65,12 +89,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initRecyclerView() {
-        dateAdapter = CalendarAdapter(this, dateList, events, currentDate.time)
-        dateAdapter.setOnDateClickListener(object: CalendarAdapter.OnDateClickListener{
+        dateAdapter = CalendarTypeAdapter(this, dateList, events, currentDate.time)
+        dateAdapter.setOnDateClickListener(object: CalendarTypeAdapter.OnDateClickListener{
             @SuppressLint("SimpleDateFormat")
             override fun onClick(v: View, position: Int) {
                 val fmt = SimpleDateFormat("yyyyMMdd")
-                Toast.makeText(this@MainActivity, "click!! : ${fmt.format(dateList[position].time)}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@CalendarTypeActivity, "click!! : ${fmt.format(dateList[position].time)}", Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -82,19 +106,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun updateEvents() {
         val cal = Calendar.getInstance()
 
-        cal.set(2022, Calendar.JUNE, 1)
+        cal.set(2022, Calendar.JULY, 1)
         events.add(Ticket(cal.time, R.drawable.img_aida))
 
-        cal.set(2022, Calendar.JUNE, 6)
+        cal.set(2022, Calendar.JULY, 6)
         events.add(Ticket(cal.time, R.drawable.img_death_note))
 
-        cal.set(2022, Calendar.JUNE, 15)
+        cal.set(2022, Calendar.JULY, 15)
         events.add(Ticket(cal.time, R.drawable.img_kinky_boots))
 
-        cal.set(2022, Calendar.JUNE, 25)
+        cal.set(2022, Calendar.JULY, 25)
         events.add(Ticket(cal.time, R.drawable.img_death_note))
 
-        cal.set(2022, Calendar.JUNE, 25)
+        cal.set(2022, Calendar.JULY, 25)
         events.add(Ticket(cal.time, R.drawable.img_man_who_laughs))
 
         dateAdapter.updateEvents(events)
@@ -138,7 +162,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 return
             }
 
-            val spacing: Int = dpToPx(this@MainActivity, 5.0f)
+            val spacing: Int = dpToPx(this@CalendarTypeActivity, 5.0f)
 
             outRect.top = if (isInTheFirstRow(position, totalSpanCount)) 0 else spacing
             outRect.left = spacing / 2

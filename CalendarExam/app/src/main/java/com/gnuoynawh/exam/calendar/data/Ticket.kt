@@ -1,4 +1,4 @@
-package com.gnuoynawh.exam.calendar
+package com.gnuoynawh.exam.calendar.data
 
 import java.util.*
 

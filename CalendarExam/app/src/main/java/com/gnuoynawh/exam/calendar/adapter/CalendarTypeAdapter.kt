@@ -1,4 +1,4 @@
-package com.gnuoynawh.exam.calendar
+package com.gnuoynawh.exam.calendar.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,22 +11,32 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.gnuoynawh.exam.calendar.R
+import com.gnuoynawh.exam.calendar.data.Ticket
+import com.gnuoynawh.exam.calendar.view.OverlapImageView
+import com.gnuoynawh.exam.calendar.view.TypeImageView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CalendarAdapter(
+class CalendarTypeAdapter(
     var context: Context,
     var list: ArrayList<Date>,
     var events: ArrayList<Ticket>,
     var today: Date)
-    : RecyclerView.Adapter<CalendarAdapter.CalendarCellView>() {
+    : RecyclerView.Adapter<CalendarTypeAdapter.CalendarCellView>() {
+
+    private var drawType: TypeImageView.DrawType = TypeImageView.DrawType.VERTICAL
+
+    fun setDrawType(drawType: TypeImageView.DrawType) {
+        this.drawType = drawType
+    }
 
     override fun getItemCount(): Int {
         return list.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CalendarCellView {
-        val layout =  LayoutInflater.from(context).inflate(R.layout.row_calendar, parent, false)
+        val layout =  LayoutInflater.from(context).inflate(R.layout.row_calendar_type, parent, false)
         return CalendarCellView(layout)
     }
 
@@ -40,23 +50,21 @@ class CalendarAdapter(
                                   else          Color.GRAY)
 
         // 이미지
-        holder.layoutLeft.visibility = View.INVISIBLE
-        holder.layoutRight.visibility = View.GONE
-
+        holder.ivThumbType.drawType = drawType
         events.forEachIndexed { _, ticket ->
             if (isSameDay(date, ticket.date)) {
 
-                if (holder.layoutLeft.visibility == View.INVISIBLE) {
-                    holder.layoutLeft.visibility = View.VISIBLE
-                    holder.ivThumbLeft.setImageResource(ticket.img)
+                if (holder.ivThumb.drawable == null) {
+                    Log.e("TEST", "111 [$date] = ${ticket.img}")
+                    holder.ivThumb.setImageResource(ticket.img)
                 } else {
-                    holder.layoutRight.visibility = View.VISIBLE
-                    holder.ivThumbRight.setImageResource(ticket.img)
+                    Log.e("TEST", "222 [$date] = ${ticket.img}")
+                    holder.ivThumbType.setImageResource(ticket.img)
                 }
 
                 if(!thisMonth) {
-                    holder.ivThumbLeft.alpha = 0.5f
-                    holder.ivThumbRight.alpha = 0.5f
+                    holder.ivThumb.alpha = 0.5f
+                    holder.ivThumbType.alpha = 0.5f
                 }
 
                 holder.tvDay.setTextColor(Color.WHITE)
@@ -100,9 +108,7 @@ class CalendarAdapter(
 
     class CalendarCellView(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDay: AppCompatTextView = itemView.findViewById(R.id.tv_date)
-        val layoutLeft: ConstraintLayout = itemView.findViewById(R.id.layout_left)
-        val layoutRight: ConstraintLayout = itemView.findViewById(R.id.layout_right)
-        val ivThumbLeft: AppCompatImageView = itemView.findViewById(R.id.iv_thumb_left)
-        val ivThumbRight: AppCompatImageView = itemView.findViewById(R.id.iv_thumb_right)
+        val ivThumb: AppCompatImageView = itemView.findViewById(R.id.iv_thumb)
+        val ivThumbType: TypeImageView = itemView.findViewById(R.id.iv_thumb_type)
     }
 }
