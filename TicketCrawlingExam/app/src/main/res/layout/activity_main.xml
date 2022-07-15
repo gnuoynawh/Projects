@@ -36,6 +36,11 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="예스24"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_5"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="예스24_2"/>
 
     </LinearLayout>
 

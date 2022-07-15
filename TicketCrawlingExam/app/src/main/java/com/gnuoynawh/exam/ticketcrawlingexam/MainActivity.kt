@@ -18,6 +18,7 @@ class MainActivity  : AppCompatActivity(), View.OnClickListener {
     lateinit var btn2: AppCompatButton
     lateinit var btn3: AppCompatButton
     lateinit var btn4: AppCompatButton
+    lateinit var btn5: AppCompatButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +28,17 @@ class MainActivity  : AppCompatActivity(), View.OnClickListener {
         btn2 = findViewById(R.id.btn_2)
         btn3 = findViewById(R.id.btn_3)
         btn4 = findViewById(R.id.btn_4)
+        btn5 = findViewById(R.id.btn_5)
         btn1.setOnClickListener(this)
         btn2.setOnClickListener(this)
         btn3.setOnClickListener(this)
         btn4.setOnClickListener(this)
+        btn5.setOnClickListener {
+            val intent = Intent(this, WebViewYes24Activity::class.java)
+            intent.putExtra("site", SiteType.Yes24)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
+        }
     }
 
     override fun onClick(v: View) {
