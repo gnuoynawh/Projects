@@ -11,8 +11,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.gnuoynawh.exam.ticketcrawlingexam.WebViewActivity
 import com.gnuoynawh.exam.ticketcrawlingexam.site.Site
-import com.gnuoynawh.exam.ticketcrawlingexam.site.SiteStep
-import com.gnuoynawh.exam.ticketcrawlingexam.site.SiteType
 
 class MyWebViewClient(
     private val activity: WebViewActivity,
@@ -29,24 +27,24 @@ class MyWebViewClient(
 
         Log.e("TEST", "onPageFinished() : $url")
 
-        if (site.step == SiteStep.None && url?.contains(site.mainUrl) == true) {
+        if (site.step == Site.STEP.NONE && url?.contains(site.mainUrl) == true) {
 
             // 메인페이지 -> 로그인페이지로 이동
             site.goLoginPage(webView)
 
-        } else if (site.step == SiteStep.Main) {
+        } else if (site.step == Site.STEP.MAIN) {
 
             // 로그인 페이지
             activity.hideLoading()
-            site.goNextStep()
+            site.nextStep()
 
-        } else if (site.step == SiteStep.Login && checkLoginResult(url)) {
+        } else if (site.step == Site.STEP.LOGIN && checkLoginResult(url)) {
 
             // 로그인 성공 체크 -> 예매내역 페이지로 이동
             activity.showLoading()
             site.goBookListPage(webView)
 
-        } else if (site.step == SiteStep.BookList) {
+        } else if (site.step == Site.STEP.BOOKLIST) {
 
             // 예매내역 조회 -> html 파싱
             site.doParsing(webView)
@@ -56,10 +54,10 @@ class MyWebViewClient(
 
     private fun checkLoginResult(url: String?): Boolean {
         return when(site.type) {
-            SiteType.InterPark,
-            SiteType.Melon,
-            SiteType.TicketLink -> url?.contains(site.loginResultUrl) == true
-            SiteType.Yes24-> getCookie(url, "YesTicket").isNotEmpty()
+            Site.TYPE.INTERPARK,
+            Site.TYPE.MELON,
+            Site.TYPE.TICKETLINK -> url?.contains(site.loginResultUrl) == true
+            Site.TYPE.YES24-> getCookie(url, "YesTicket").isNotEmpty()
         }
     }
 

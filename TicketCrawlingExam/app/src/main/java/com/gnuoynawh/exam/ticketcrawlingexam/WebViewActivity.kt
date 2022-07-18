@@ -10,12 +10,21 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
+import androidx.lifecycle.lifecycleScope
+import com.gnuoynawh.exam.ticketcrawlingexam.db.TicketDatabase
+import com.gnuoynawh.exam.ticketcrawlingexam.site.Site
+import com.gnuoynawh.exam.ticketcrawlingexam.db.dao.Ticket
+import com.gnuoynawh.exam.ticketcrawlingexam.db.dao.TicketDao
 import com.gnuoynawh.exam.ticketcrawlingexam.site.*
 import com.gnuoynawh.exam.ticketcrawlingexam.web.MyJavaScriptInterface
 import com.gnuoynawh.exam.ticketcrawlingexam.web.MyWebViewClient
+import kotlinx.coroutines.launch
 
 class WebViewActivity: AppCompatActivity() {
+
+    private val db by lazy {
+        TicketDatabase.getDatabase(this)?.getTicket()
+    }
 
     private val webView: WebView by lazy {
         findViewById(R.id.webView)
@@ -41,11 +50,11 @@ class WebViewActivity: AppCompatActivity() {
     }
 
     private fun updateData() {
-        site = when(intent.getSerializableExtra("site") as SiteType) {
-            SiteType.InterPark  -> InterPark()
-            SiteType.Melon      -> Melon()
-            SiteType.TicketLink -> TicketLink()
-            SiteType.Yes24      -> Yes24()
+        site = when(intent.getSerializableExtra("site") as Site.TYPE) {
+            Site.TYPE.INTERPARK  -> InterPark()
+            Site.TYPE.MELON      -> Melon()
+            Site.TYPE.TICKETLINK -> TicketLink()
+            Site.TYPE.YES24      -> Yes24()
         }
     }
 
@@ -94,14 +103,26 @@ class WebViewActivity: AppCompatActivity() {
         loadingView.visibility = View.INVISIBLE
     }
 
-    fun onResult(list: ArrayList<Ticket>) {
-        Log.e("TEST", "onResult : ${list.size}")
+    private fun onResult(list: ArrayList<Ticket>?) {
+        Log.e("TEST", "onResult : ${list?.size ?: 0}")
 
         val intent = Intent(this, ResultActivity::class.java)
-        intent.putExtra("result", list)
+
+        if (list != null)
+            intent.putExtra("result", list)
+
         startActivity(intent)
         finish()
         overridePendingTransition(0,0)
     }
 
+    fun onResultWithDB(list: ArrayList<Ticket>) {
+        Log.e("TEST", "onResultWithDB : ${list.size}")
+
+        // insert
+        lifecycleScope.launch {
+            db?.insert(*list.map { it }.toTypedArray())
+            onResult(null)
+        }
+    }
 }

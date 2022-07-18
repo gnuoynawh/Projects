@@ -1,58 +1,54 @@
 package com.gnuoynawh.exam.ticketcrawlingexam.site
 
-import android.util.Log
 import android.webkit.WebView
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
+import com.gnuoynawh.exam.ticketcrawlingexam.db.dao.Ticket
 
 abstract class Site {
 
-    var step: SiteStep = SiteStep.None
+    enum class STEP {
+        NONE, MAIN, LOGIN, BOOKLIST, PARSE, DONE
+    }
 
-    abstract val type: SiteType
-    abstract val mainUrl: String
-    abstract val loginUrl: String
-    abstract val loginResultUrl: String
-    abstract var bookListUrl: String
-    abstract val parseScript: String
+    enum class TYPE {
+        INTERPARK, MELON, TICKETLINK, YES24
+    }
 
-    /**
-     *
-     */
+    // 진행상태
+    var step: STEP = STEP.NONE
+
+    // 사이트 타입
+    abstract val type: TYPE
+
+    abstract val mainUrl: String            // 티켓사이트 메인
+    abstract val loginUrl: String           // 로그인 페이지
+    abstract val loginResultUrl: String     // 로그인결과 페이지
+    abstract var bookListUrl: String        // 예매내역 페이지
+    abstract val parseScript: String        // 예매내역 파싱 스크립트
+
+    // 로그인 페이지로 이동
     abstract fun goLoginPage(webView: WebView)
 
-    /**
-     *
-     */
+    // 예매내역 페이지로 이동
     abstract fun goBookListPage(webView: WebView)
 
-    /**
-     *
-     */
+    // 예매내역 가져오기
     abstract fun doParsing(webView: WebView)
 
-    /**
-     *
-     */
+    // 예매내역 가져오기
     abstract fun getBookList(html: String): ArrayList<Ticket>
 
-    /**
-     *
-     */
+    // 예매내역 중복체크
     abstract fun verifyDuplicate(ticket: Ticket, list: ArrayList<Ticket>) : Boolean
 
-    /**
-     *
-     */
-    fun goNextStep() {
-        Log.e("TEST", "goNextStep() before step = $step")
+    // 다음 진행상태로 변경
+    fun nextStep() {
         when(step) {
-            SiteStep.None -> step = SiteStep.Main
-            SiteStep.Main -> step = SiteStep.Login
-            SiteStep.Login -> step = SiteStep.BookList
-            SiteStep.BookList -> step = SiteStep.Parse
-            SiteStep.Parse -> step = SiteStep.Done
+            STEP.NONE -> step = STEP.MAIN
+            STEP.MAIN -> step = STEP.LOGIN
+            STEP.LOGIN -> step = STEP.BOOKLIST
+            STEP.BOOKLIST -> step = STEP.PARSE
+            STEP.PARSE -> step = STEP.DONE
             else -> {}
         }
-        Log.e("TEST", "goNextStep() after step = $step")
     }
 }

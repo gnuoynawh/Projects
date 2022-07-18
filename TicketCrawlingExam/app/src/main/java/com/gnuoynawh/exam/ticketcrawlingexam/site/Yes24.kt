@@ -1,26 +1,15 @@
 package com.gnuoynawh.exam.ticketcrawlingexam.site
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.webkit.WebView
-import androidx.core.view.contains
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
-import com.gnuoynawh.exam.ticketcrawlingexam.web.MyYes24JavaScriptInterface
+import com.gnuoynawh.exam.ticketcrawlingexam.db.dao.Ticket
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-/**
- * todo : 예스24는 리스트가 관람내역, 예매내역이 존재하는데, 현재는 관람내역만 작업해둠.
- *        - 관람내역 (http://m.ticket.yes24.com/MyPage/WatchList.aspx),
- *        - 예매내역 (http://m.ticket.yes24.com/MyPage/OrderList.aspx)
- *
- * todo : 10건 이상일 경우, 페이징 처리가 됨
- */
 class Yes24: Site() {
 
-    override val type: SiteType
-        get() = SiteType.Yes24
+    override val type: TYPE
+        get() = TYPE.YES24
 
     override val mainUrl: String
         get() = "http://m.ticket.yes24.com/"
@@ -35,7 +24,7 @@ class Yes24: Site() {
     override val loginResultUrl: String
         get() = "m.ticket.yes24.com"
 
-    override var bookListUrl: String = "http://m.ticket.yes24.com/MyPage/WatchList.aspx"
+    override var bookListUrl: String = "http://m.ticket.yes24.com/MyPage/OrderList.aspx"
 
     override val parseScript: String
         get() = "javascript:" +
@@ -48,36 +37,64 @@ class Yes24: Site() {
                     "window.Android.goNextPage(document.getElementsByTagName('body')[0].innerHTML);" +
                 "}, 2000);"
 
+    override fun getBookList(html: String): ArrayList<Ticket> {
+        Log.e("TEST", "getBookList(${resultList.size}) = $html")
+        return resultList
+    }
+
+    override fun goLoginPage(webView: WebView) {
+        webView.loadUrl(loginUrl)
+    }
+
+    override fun goBookListPage(webView: WebView) {
+        webView.loadUrl(bookListUrl)
+        step = STEP.BOOKLIST
+    }
+
+    override fun doParsing(webView: WebView) {
+        this.webView = webView
+
+        webView.loadUrl(parseScript)
+        step = STEP.PARSE
+    }
+
+    override fun verifyDuplicate(ticket: Ticket, list: ArrayList<Ticket>): Boolean {
+        list.forEachIndexed { _, item ->
+            if (item.number == ticket.number)
+                return true
+        }
+
+        return false
+    }
+
+    /////////////////////////////////////////
+
+    // 웹뷰
+    private var webView: WebView? = null
+
+    // 결과 리스트
     private val resultList = ArrayList<Ticket>()
+
+    // 페이징 처리
     private var currentPage = 1
 
+    // 관람내역
+    private val orderListUrl: String = "http://m.ticket.yes24.com/MyPage/WatchList.aspx"
+                                    // "http://m.ticket.yes24.com/MyPage/CancelList.aspx"
+
+    // 다음 페이지로 이동
     private fun goNextPage() {
-        val nextScript =
-            "javascript:jsf_go_pager($currentPage);\n" +
-            "setTimeout(function(){\n " +
-                "window.Android.goNextPage(document.getElementsByTagName('body')[0].innerHTML);" +
-            "}, 3000);"
-
         webView?.post {
-            Log.e("TEST", "goNextPage(111)")
-            webView?.loadUrl(nextScript)
+            webView?.loadUrl(
+                "javascript:jsf_go_pager($currentPage);\n" +
+                        "setTimeout(function(){\n " +
+                            "window.Android.goNextPage(document.getElementsByTagName('body')[0].innerHTML);" +
+                        "}, 3000);"
+            )
         }
     }
 
-    private val orderListUrl: String = "http://m.ticket.yes24.com/MyPage/OrderList.aspx"
-                                     // = "http://m.ticket.yes24.com/MyPage/CancelList.aspx"
-    private fun close() {
-        webView?.post {
-            if (webView?.url?.contains("WatchList") == true) {
-                bookListUrl = orderListUrl
-                currentPage = 1
-                this.goBookListPage(webView!!)
-            } else {
-                webView?.loadUrl("javascript:window.Android.getBookList('');")
-            }
-        }
-    }
-
+    // 페이지로부터 데이터 파싱
     fun getBookListFromPage(html: String) {
         Log.e("TEST", "getBookListFromPage()")
 
@@ -92,16 +109,16 @@ class Yes24: Site() {
 
         // 내역이 0 일때
         if (pages == 0) {
-            close()
+            done()
         } else {
 
             // 내역이 있을 경우 파싱
-            doParse(doc)
+            parse(doc)
 
             if (pages == currentPage) {
 
                 // 마지막 페이지이면 종료
-                close()
+                done()
             } else {
 
                 // 페이지가 있다면 다음페이지로 이동
@@ -111,7 +128,8 @@ class Yes24: Site() {
         }
     }
 
-    private fun doParse(doc: Document) {
+    // 예매 내역 파싱
+    private fun parse(doc: Document) {
         val bookList = doc.getElementById("BoardList")
         val books = bookList?.select("li")
 
@@ -146,42 +164,22 @@ class Yes24: Site() {
         }
     }
 
-    override fun getBookList(html: String): ArrayList<Ticket> {
-        Log.e("TEST", "getBookList(${resultList.size}) = $html")
-        return resultList
-    }
+    // 파싱 종료
+    private fun done() {
+        webView?.post {
 
-    override fun goLoginPage(webView: WebView) {
-        webView.loadUrl(loginUrl)
-    }
-
-    override fun goBookListPage(webView: WebView) {
-        webView.loadUrl(bookListUrl)
-        step = SiteStep.BookList
-    }
-
-    /**
-     *
-     */
-    var webView: WebView? = null
-    override fun doParsing(webView: WebView) {
-        this.webView = webView
-
-        webView.loadUrl(parseScript)
-        step = SiteStep.Parse
-    }
-
-    override fun verifyDuplicate(ticket: Ticket, list: ArrayList<Ticket>): Boolean {
-
-        // 이미 추가된 리스트일 경우 제외
-        list.forEachIndexed { _, item ->
-            if (item.number == ticket.number)
-                return true
+            // 예매내역일 경우, 관람내역 파싱 시작
+            if (webView?.url?.contains("OrderList") == true) {
+                bookListUrl = orderListUrl
+                currentPage = 1
+                this.goBookListPage(webView!!)
+            } else {
+                webView?.loadUrl("javascript:window.Android.getBookList('');")
+            }
         }
-
-        return false
     }
 
+    // 페이지 계산
     private fun calculatePage(count: Int): Int {
         val condition = 10
 

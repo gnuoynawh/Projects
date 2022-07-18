@@ -2,14 +2,14 @@ package com.gnuoynawh.exam.ticketcrawlingexam.site
 
 import android.util.Log
 import android.webkit.WebView
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
+import com.gnuoynawh.exam.ticketcrawlingexam.db.dao.Ticket
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 class TicketLink: Site() {
 
-    override val type: SiteType
-        get() = SiteType.TicketLink
+    override val type: TYPE
+        get() = TYPE.TICKETLINK
 
     override val mainUrl: String
         get() = "https://m.ticketlink.co.kr/"
@@ -52,12 +52,7 @@ class TicketLink: Site() {
         val detailList = doc.getElementsByClass("detail_cont")
         val detail = detailList?.select("ul.reserve_detail")
 
-        Log.e("TEST", "detailList size = ${detailList?.size}")
-        detail?.forEachIndexed { index, element ->
-            Log.e("TEST", "detail [$index]")
-
-            // 아래 스크롤
-            // window.scrollTo(0, document.body.scrollHeight);
+        detail?.forEachIndexed { _, element ->
 
             val book = element?.select("a")
             book?.forEachIndexed { index1, element1 ->
@@ -65,16 +60,14 @@ class TicketLink: Site() {
                 val ticket = Ticket()
                 ticket.title = element1.select("h4.tit").text()
 
-                Log.e("TEST", "======== book [$index1] = ${ticket.title}")
+                Log.e("TEST", "books [$index1] all = ${element1.text()}")
 
                 val informs = element1.select("ul.reserve_info li")
-                informs.forEachIndexed { index2, element2 ->
+                informs.forEachIndexed { _, element2 ->
 
                     val values = element2.select("span")
                     val title = values[0].text()
                     val contents = values[1].text()
-
-                    Log.e("TEST", "informs [$index2] title = $title, contents = $contents")
 
                     when(title) {
                         "예약번호" -> ticket.number = contents
@@ -100,21 +93,19 @@ class TicketLink: Site() {
 
     override fun goBookListPage(webView: WebView) {
         webView.loadUrl(bookListUrl)
-        step = SiteStep.BookList
+        step = STEP.BOOKLIST
     }
 
     override fun doParsing(webView: WebView) {
         webView.loadUrl(parseScript)
-        step = SiteStep.Parse
+        step = STEP.PARSE
     }
 
     override fun verifyDuplicate(ticket: Ticket, list: ArrayList<Ticket>) : Boolean {
 
-        // 예매 취소면 제외
         if (ticket.state.contains("취소"))
             return true
 
-        // 이미 추가된 리스트일 경우 제외
         list.forEachIndexed { _, item ->
             if (item.number == ticket.number)
                 return true

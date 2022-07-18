@@ -2,14 +2,14 @@ package com.gnuoynawh.exam.ticketcrawlingexam.site
 
 import android.util.Log
 import android.webkit.WebView
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
+import com.gnuoynawh.exam.ticketcrawlingexam.db.dao.Ticket
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 class Melon: Site() {
 
-    override val type: SiteType
-        get() = SiteType.Melon
+    override val type: TYPE
+        get() = TYPE.MELON
 
     override val mainUrl: String
         get() = "https://m.ticket.melon.com/main/index.htm"
@@ -73,21 +73,20 @@ class Melon: Site() {
 
     override fun goLoginPage(webView: WebView) {
         webView.loadUrl(loginUrl)
-        step = SiteStep.Main
+        step = STEP.MAIN
     }
 
     override fun goBookListPage(webView: WebView) {
         webView.loadUrl(bookListUrl)
-        step = SiteStep.BookList
+        step = STEP.BOOKLIST
     }
 
     override fun doParsing(webView: WebView) {
         webView.loadUrl(parseScript)
-        step = SiteStep.Parse
+        step = STEP.PARSE
     }
 
     override fun verifyDuplicate(ticket: Ticket, list: ArrayList<Ticket>): Boolean {
-        // 이미 추가된 리스트일 경우 제외
         list.forEachIndexed { _, item ->
             if (item.number == ticket.number)
                 return true

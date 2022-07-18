@@ -1,5 +1,6 @@
 package com.gnuoynawh.exam.ticketcrawlingexam
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +9,12 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
+import com.gnuoynawh.exam.ticketcrawlingexam.db.dao.Ticket
 import java.util.*
 
 class TicketAdapter(
     var context: Context,
-    var list: ArrayList<Ticket>
+    var list: List<Ticket>
 ): RecyclerView.Adapter<TicketAdapter.TicketView>() {
 
     override fun getItemCount(): Int {
@@ -45,6 +46,12 @@ class TicketAdapter(
         holder.itemView.setOnClickListener {
             listener?.onClick(it, position)
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public fun updateData(list: List<Ticket>) {
+        this.list = list
+        this.notifyDataSetChanged()
     }
 
     interface OnItemClickListener {
