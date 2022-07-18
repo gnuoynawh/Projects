@@ -6,13 +6,13 @@
     <data>
         <variable
             name="viewModel"
-            type="com.gnuoynawh.musical.ticket.MainViewModel" />
+            type="com.gnuoynawh.musical.ticket.ui.model.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".ui.MainActivity">
 
         <LinearLayout
             android:id="@+id/top"
@@ -38,6 +38,12 @@
                 android:layout_weight="1"
                 android:text="리스트"/>
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_add"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="예약내역 가져오기"/>
         </LinearLayout>
 
         <FrameLayout

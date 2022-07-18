@@ -6,13 +6,13 @@
     <data>
         <variable
             name="viewModel"
-            type="com.gnuoynawh.musical.ticket.MainViewModel" />
+            type="com.gnuoynawh.musical.ticket.ui.model.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".ui.MainActivity">
 
         <TextView
             android:id="@+id/tv_ticket_title"

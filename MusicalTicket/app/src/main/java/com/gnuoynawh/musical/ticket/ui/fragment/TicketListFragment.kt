@@ -1,4 +1,4 @@
-package com.gnuoynawh.musical.ticket
+package com.gnuoynawh.musical.ticket.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,9 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.gnuoynawh.musical.ticket.databinding.FragmentCalendarBinding
+import com.gnuoynawh.musical.ticket.R
 import com.gnuoynawh.musical.ticket.databinding.FragmentTicketListBinding
+import com.gnuoynawh.musical.ticket.ui.model.MainViewModel
 
 class TicketListFragment: Fragment() {
 
