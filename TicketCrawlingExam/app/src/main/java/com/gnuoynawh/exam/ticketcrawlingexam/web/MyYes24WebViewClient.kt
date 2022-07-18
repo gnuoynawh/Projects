@@ -50,7 +50,7 @@ class MyYes24WebViewClient(
         } else if (site.step == SiteStep.BookList) {
 
             // 예매내역 조회 -> html 파싱
-            // site.getBookList(webView)
+            site.doParsing(webView)
 
         }
     }

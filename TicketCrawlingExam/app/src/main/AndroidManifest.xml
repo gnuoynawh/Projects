@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:hardwareAccelerated="true"
         android:theme="@style/Theme.TicketCrawlingExam">
         <activity
             android:name=".MainActivity"

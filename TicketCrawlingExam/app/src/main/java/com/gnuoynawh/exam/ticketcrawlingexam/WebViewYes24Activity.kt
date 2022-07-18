@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
 import com.gnuoynawh.exam.ticketcrawlingexam.site.*
-import com.gnuoynawh.exam.ticketcrawlingexam.web.MyJavaScriptInterface
 import com.gnuoynawh.exam.ticketcrawlingexam.web.MyYes24JavaScriptInterface
 import com.gnuoynawh.exam.ticketcrawlingexam.web.MyYes24WebViewClient
 
@@ -41,7 +40,7 @@ class WebViewYes24Activity: AppCompatActivity() {
         initWebView()
 
         btn3.setOnClickListener {
-            site.getBookList(webView)
+            site.doParsing(webView)
         }
     }
 
@@ -70,9 +69,9 @@ class WebViewYes24Activity: AppCompatActivity() {
         settings.displayZoomControls = false
         settings.mediaPlaybackRequiresUserGesture = false
 
-        webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE
-        webView.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        webView.settings.setSupportMultipleWindows(false)
+        settings.cacheMode = WebSettings.LOAD_NO_CACHE
+        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        settings.setSupportMultipleWindows(false)
 
         //
         webView.webViewClient = MyYes24WebViewClient(this, webView, site)

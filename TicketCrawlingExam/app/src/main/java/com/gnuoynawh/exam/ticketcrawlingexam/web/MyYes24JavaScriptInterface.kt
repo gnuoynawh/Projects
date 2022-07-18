@@ -24,8 +24,8 @@ class MyYes24JavaScriptInterface(
 
     @JavascriptInterface
     fun goNextPage(html: String) {
-        Log.e("TEST", "goNextPage()")
-
+        Log.e("TEST", "goNextPage(222)")
+        (site as Yes24).getBookListFromPage(html)
     }
 
     @JavascriptInterface

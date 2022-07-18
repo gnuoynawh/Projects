@@ -12,7 +12,7 @@ abstract class Site {
     abstract val mainUrl: String
     abstract val loginUrl: String
     abstract val loginResultUrl: String
-    abstract val bookListUrl: String
+    abstract var bookListUrl: String
     abstract val parseScript: String
 
     /**
@@ -28,7 +28,7 @@ abstract class Site {
     /**
      *
      */
-    abstract fun getBookList(webView: WebView)
+    abstract fun doParsing(webView: WebView)
 
     /**
      *

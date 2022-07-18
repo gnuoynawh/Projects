@@ -20,8 +20,7 @@ class Melon: Site() {
     override val loginResultUrl: String
         get() = mainUrl
 
-    override val bookListUrl: String
-        get() = "https://m.ticket.melon.com/myticket/rsrvList.htm"
+    override var bookListUrl: String = "https://m.ticket.melon.com/myticket/rsrvList.htm"
 
     override val parseScript: String
         get() = "javascript:" +
@@ -82,7 +81,7 @@ class Melon: Site() {
         step = SiteStep.BookList
     }
 
-    override fun getBookList(webView: WebView) {
+    override fun doParsing(webView: WebView) {
         webView.loadUrl(parseScript)
         step = SiteStep.Parse
     }

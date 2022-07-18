@@ -24,8 +24,7 @@ class TicketLink: Site() {
     override val loginResultUrl: String
         get() = mainUrl
 
-    override val bookListUrl: String
-        get() = "https://m.ticketlink.co.kr/my/reserve/list?page=1&productClass=ALL&searchType=PERIOD&period=MONTH_3&targetDay=RESERVE&year=&month="
+    override var bookListUrl: String = "https://m.ticketlink.co.kr/my/reserve/list?page=1&productClass=ALL&searchType=PERIOD&period=MONTH_3&targetDay=RESERVE&year=&month="
 
     override val parseScript: String
         get() = "javascript:" +
@@ -104,7 +103,7 @@ class TicketLink: Site() {
         step = SiteStep.BookList
     }
 
-    override fun getBookList(webView: WebView) {
+    override fun doParsing(webView: WebView) {
         webView.loadUrl(parseScript)
         step = SiteStep.Parse
     }

@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.webkit.WebView
+import androidx.core.view.contains
 import com.gnuoynawh.exam.ticketcrawlingexam.data.Ticket
 import com.gnuoynawh.exam.ticketcrawlingexam.web.MyYes24JavaScriptInterface
 import org.jsoup.Jsoup
@@ -34,9 +35,7 @@ class Yes24: Site() {
     override val loginResultUrl: String
         get() = "m.ticket.yes24.com"
 
-    override val bookListUrl: String
-        get() = "http://m.ticket.yes24.com/MyPage/CancelList.aspx"
-                //"http://m.ticket.yes24.com/MyPage/WatchList.aspx"
+    override var bookListUrl: String = "http://m.ticket.yes24.com/MyPage/WatchList.aspx"
 
     override val parseScript: String
         get() = "javascript:" +
@@ -57,13 +56,26 @@ class Yes24: Site() {
             "javascript:jsf_go_pager($currentPage);\n" +
             "setTimeout(function(){\n " +
                 "window.Android.goNextPage(document.getElementsByTagName('body')[0].innerHTML);" +
-            "}, 2000);"
+            "}, 3000);"
 
-        webView?.loadUrl(nextScript)
+        webView?.post {
+            Log.e("TEST", "goNextPage(111)")
+            webView?.loadUrl(nextScript)
+        }
     }
 
-    private fun finish() {
-        webView?.loadUrl("window.Android.getBookList(document.getElementsByTagName('body')[0].innerHTML);")
+    private val orderListUrl: String = "http://m.ticket.yes24.com/MyPage/OrderList.aspx"
+                                     // = "http://m.ticket.yes24.com/MyPage/CancelList.aspx"
+    private fun close() {
+        webView?.post {
+            if (webView?.url?.contains("WatchList") == true) {
+                bookListUrl = orderListUrl
+                currentPage = 1
+                this.goBookListPage(webView!!)
+            } else {
+                webView?.loadUrl("javascript:window.Android.getBookList('');")
+            }
+        }
     }
 
     fun getBookListFromPage(html: String) {
@@ -76,50 +88,66 @@ class Yes24: Site() {
         val totalCnt = doc.getElementById("emtotalCnt")?.text() ?: "0"
         val pages = calculatePage(totalCnt.toInt())
 
-        if (pages > currentPage) {
+        Log.e("TEST", "pages = $pages, current = $currentPage")
 
-            // 예매리스트
-            val bookList = doc.getElementById("BoardList")
-            val books = bookList?.select("li")
+        // 내역이 0 일때
+        if (pages == 0) {
+            close()
+        } else {
 
-            books?.forEachIndexed { index, element ->
-                Log.e("TEST", "books [$index] all = ${element.text()}")
+            // 내역이 있을 경우 파싱
+            doParse(doc)
 
-                val ticket: Ticket = Ticket()
-                ticket.title = element.select("p.goods_name").text()
-                ticket.thumb = element.select("div.goods_img img").attr("src")
+            if (pages == currentPage) {
 
-                // 상세정보
-                val informs = element.select("div.goods_infoUnitArea dl")
-                informs.forEachIndexed { _, data ->
+                // 마지막 페이지이면 종료
+                close()
+            } else {
 
-                    val title = data.select("dt").text()
-                    val contents = data.select("dd").text()
+                // 페이지가 있다면 다음페이지로 이동
+                currentPage++
+                goNextPage()
+            }
+        }
+    }
 
-                    // 예매번호 예외
-                    val number = data.select("dd em.txt").text()
+    private fun doParse(doc: Document) {
+        val bookList = doc.getElementById("BoardList")
+        val books = bookList?.select("li")
 
-                    when(title) {
-                        "예매번호" -> ticket.number = number
-                        "관람일시" -> ticket.date = contents
-                        // "공연장소" -> ticket.place = contents
-                        "매수" -> ticket.count = contents
-                    }
-                }
+        books?.forEachIndexed { index, element ->
+            Log.e("TEST", "books [$index] all = ${element.text()}")
 
-                if(!verifyDuplicate(ticket, resultList)) {
-                    resultList.add(ticket)
+            val ticket: Ticket = Ticket()
+            ticket.title = element.select("p.goods_name").text()
+            ticket.thumb = element.select("div.goods_img img").attr("src")
+
+            // 상세정보
+            val informs = element.select("div.goods_infoUnitArea dl")
+            informs.forEachIndexed { _, data ->
+
+                val title = data.select("dt").text()
+                val contents = data.select("dd").text()
+
+                // 예매번호 예외
+                val number = data.select("dd em.txt").text()
+
+                when(title) {
+                    "예매번호" -> ticket.number = number
+                    "관람일시" -> ticket.date = contents
+                    // "공연장소" -> ticket.place = contents
+                    "매수" -> ticket.count = contents
                 }
             }
 
-            currentPage++
-            goNextPage()
-        } else {
-            finish()
+            if(!verifyDuplicate(ticket, resultList)) {
+                resultList.add(ticket)
+            }
         }
     }
 
     override fun getBookList(html: String): ArrayList<Ticket> {
+        Log.e("TEST", "getBookList(${resultList.size}) = $html")
         return resultList
     }
 
@@ -136,9 +164,8 @@ class Yes24: Site() {
      *
      */
     var webView: WebView? = null
-    override fun getBookList(webView: WebView) {
+    override fun doParsing(webView: WebView) {
         this.webView = webView
-        resultList.clear()
 
         webView.loadUrl(parseScript)
         step = SiteStep.Parse
@@ -160,7 +187,7 @@ class Yes24: Site() {
 
         return when {
             count == 0 ->
-                1
+                0
             count % condition > 0 ->
                 count / condition + 1
             else ->

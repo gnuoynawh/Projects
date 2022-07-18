@@ -22,8 +22,7 @@ class InterPark: Site() {
                 // "https://smshop.interpark.com/my/shop/index.html"
                 // "http://mticket.interpark.com/MyTicket/"
 
-    override val bookListUrl: String
-        get() = "https://mticket.interpark.com/MyPage/BookedList?PeriodSearch=03#"
+    override var bookListUrl: String = "https://mticket.interpark.com/MyPage/BookedList?PeriodSearch=03#"
 
     override val parseScript: String
         get() = "javascript:" +
@@ -95,7 +94,7 @@ class InterPark: Site() {
         step = SiteStep.BookList
     }
 
-    override fun getBookList(webView: WebView) {
+    override fun doParsing(webView: WebView) {
         webView.loadUrl(parseScript)
         step = SiteStep.Parse
     }
