@@ -1,5 +1,6 @@
 package com.gnuoynawh.musical.ticket.ui.fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
@@ -7,68 +8,103 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gnuoynawh.musical.ticket.R
-import com.gnuoynawh.musical.ticket.databinding.FragmentCalendarBinding
+import com.gnuoynawh.musical.ticket.db.Ticket
 import com.gnuoynawh.musical.ticket.ui.MainActivity
-import com.gnuoynawh.musical.ticket.ui.model.MainViewModel
 import com.gnuoynawh.musical.ticket.ui.adapter.CalendarAdapter
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CalendarFragment(
-    val mainActivity: MainActivity
+    val activity: MainActivity
 ): Fragment() {
 
-    private val viewModel: MainViewModel by viewModels()
+    lateinit var btnPrevious: AppCompatImageButton
+    lateinit var btnNext: AppCompatImageButton
+    lateinit var tvTitle: AppCompatTextView
+    lateinit var recyclerView: RecyclerView
 
-    lateinit var binding: FragmentCalendarBinding
     lateinit var dateAdapter: CalendarAdapter
 
     fun newInstance() : CalendarFragment {
-        return CalendarFragment(mainActivity)
+        return CalendarFragment(activity)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    private val currentDate: Calendar = Calendar.getInstance()
+    private val days = 42
 
-        //return inflater.inflate(R.layout.fragment_calendar, container, false)
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_calendar, container, false)
+    private var dateList: ArrayList<Date> = ArrayList<Date>()
 
-        activity?.let {
-            binding.viewModel= viewModel
-            binding.lifecycleOwner = this
-        }
-
-        return binding.root
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return inflater.inflate(R.layout.fragment_calendar, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnPrevious.setOnClickListener {
-            viewModel.changeCurrentDate(this, -1)
+        btnPrevious = view.findViewById(R.id.btn_previous)
+        btnPrevious.setOnClickListener {
+            changeCurrentDate(-1)
         }
 
-        binding.btnNext.setOnClickListener {
-            viewModel.changeCurrentDate(this, 1)
+        btnNext = view.findViewById(R.id.btn_next)
+        btnNext.setOnClickListener {
+            changeCurrentDate(1)
         }
 
-        //
-        dateAdapter = CalendarAdapter(mainActivity, viewModel)
-        binding.recyclerview.apply {
-            adapter = dateAdapter
-            layoutManager = GridLayoutManager(activity, 7, RecyclerView.VERTICAL, false)
-            addItemDecoration(itemDecoration)
+        tvTitle = view.findViewById(R.id.tv_title)
+        recyclerView = view.findViewById(R.id.recyclerview)
+
+        initRecyclerView()
+        updateCalendar()
+    }
+
+    private fun initRecyclerView() {
+        dateAdapter = CalendarAdapter(activity, dateList, activity.tickets, currentDate.time)
+        dateAdapter.setOnDateClickListener(object: CalendarAdapter.OnDateClickListener{
+            @SuppressLint("SimpleDateFormat")
+            override fun onClick(v: View, position: Int) {
+                val fmt = SimpleDateFormat("yyyyMMdd")
+                Toast.makeText(activity, "click!! : ${fmt.format(dateList[position].time)}", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        recyclerView.adapter = dateAdapter
+        recyclerView.layoutManager = GridLayoutManager(activity, 7, RecyclerView.VERTICAL, false)
+        recyclerView.addItemDecoration(itemDecoration)
+    }
+
+    private fun changeCurrentDate(value: Int) {
+        currentDate.add(Calendar.MONTH, value)
+        dateList.clear()
+        updateCalendar()
+    }
+
+    private fun updateCalendar() {
+        val calendar = currentDate.clone() as Calendar
+        calendar[Calendar.DAY_OF_MONTH] = 1
+        val monthBeginningCell = calendar[Calendar.DAY_OF_WEEK] - 1
+
+        calendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell)
+
+        while (dateList.size < days) {
+            dateList.add(calendar.time)
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
 
-        //
-        viewModel.updateCalendar(this)
+        val year = currentDate.get(Calendar.YEAR)
+        val month = currentDate.get(Calendar.MONTH).plus(1)
+
+        // update
+        dateAdapter.updateData(dateList, currentDate.time)
+        tvTitle.text = getString(R.string.calendar_title, year, month)
     }
 
     private val itemDecoration: RecyclerView.ItemDecoration = object: RecyclerView.ItemDecoration() {
@@ -88,7 +124,7 @@ class CalendarFragment(
                 return
             }
 
-            val spacing: Int = dpToPx(mainActivity, 5.0f)
+            val spacing: Int = dpToPx(activity, 5.0f)
 
             outRect.top = if (isInTheFirstRow(position, totalSpanCount)) 0 else spacing
             outRect.left = spacing / 2

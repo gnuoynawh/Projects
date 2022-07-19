@@ -1,47 +1,84 @@
 package com.gnuoynawh.musical.ticket.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import androidx.appcompat.widget.AppCompatButton
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import com.gnuoynawh.musical.ticket.R
-import com.gnuoynawh.musical.ticket.databinding.ActivityMainBinding
+import com.gnuoynawh.musical.ticket.db.MTicketDatabase
+import com.gnuoynawh.musical.ticket.db.Ticket
 import com.gnuoynawh.musical.ticket.ui.fragment.CalendarFragment
 import com.gnuoynawh.musical.ticket.ui.fragment.TicketListFragment
-import com.gnuoynawh.musical.ticket.ui.model.MainViewModel
+import kotlinx.coroutines.launch
+import java.util.ArrayList
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val db by lazy {
+        MTicketDatabase.getDatabase(this)?.getTicket()
+    }
+
+    private val btnCalendar: AppCompatButton by lazy {
+        findViewById(R.id.btn_calendar)
+    }
+
+    private val btnList: AppCompatButton by lazy {
+        findViewById(R.id.btn_calendar)
+    }
+
+    private val btnAdd: AppCompatButton by lazy {
+        findViewById(R.id.btn_calendar)
+    }
+
+    private val calendarFragment = CalendarFragment(this).newInstance()
+    private val ticketListFragment = TicketListFragment(this).newInstance()
+
+    var ticketData: LiveData<List<Ticket>>? = null
+    var tickets: List<Ticket> = ArrayList<Ticket>()
+
+    override fun onClick(v: View) {
+        when(v.id) {
+            R.id.btn_calendar -> changeFragment(calendarFragment)
+            R.id.btn_list -> changeFragment(ticketListFragment)
+            R.id.btn_add -> {
+
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,
-            R.layout.activity_main
-        )
-        binding.viewModel = viewModel
+        btnCalendar.setOnClickListener(this)
+        btnList.setOnClickListener(this)
+        btnAdd.setOnClickListener(this)
 
-        binding.btnCalendar.setOnClickListener {
-            changeFragment(true)
-        }
+        // data
+        lifecycleScope.launch {
+            ticketData = db?.getAllTickets()
+            ticketData?.observe(this@MainActivity) {
+                Log.e("TEST", "size = ${it.size}")
+                tickets = it
 
-        binding.btnList.setOnClickListener {
-            changeFragment(false)
-        }
-
-        binding.btnAdd.setOnClickListener {
-            
+                //ticketListFragment.updateData(tickets)
+            }
         }
 
         // init
-        changeFragment(true)
+        changeFragment(calendarFragment)
     }
 
-    private fun changeFragment(calendar: Boolean) {
-        val fragment = if(calendar) CalendarFragment(this).newInstance()
-                       else         TicketListFragment().newInstance()
-
-        supportFragmentManager.beginTransaction().replace(R.id.body, fragment).commit()
+    private fun changeFragment(fragment: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.body, fragment)
+            .commit()
     }
 }

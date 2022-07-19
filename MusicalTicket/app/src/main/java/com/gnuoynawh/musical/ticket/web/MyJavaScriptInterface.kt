@@ -1,11 +1,11 @@
-package com.gnuoynawh.exam.ticketcrawlingexam.web
+package com.gnuoynawh.musical.ticket.web
 
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import com.gnuoynawh.exam.ticketcrawlingexam.WebViewActivity
-import com.gnuoynawh.exam.ticketcrawlingexam.site.Site
 import com.gnuoynawh.exam.ticketcrawlingexam.site.Yes24
+import com.gnuoynawh.musical.ticket.common.site.Site
+import com.gnuoynawh.musical.ticket.ui.WebViewActivity
 
 class MyJavaScriptInterface(
     private val activity: WebViewActivity,
@@ -19,13 +19,15 @@ class MyJavaScriptInterface(
     }
 
     @JavascriptInterface
-    fun goNextPage(html: String) {
-        (site as Yes24).getBookListFromPage(html)
+    fun getBookList(html: String) {
+        activity.onResultWithDB(site.getBookList(html))
     }
 
+    /**
+     * Only Site == Yes24
+     */
     @JavascriptInterface
-    fun getBookList(html: String) {
-        // activity.onResult(site.getBookList(html))
-        activity.onResultWithDB(site.getBookList(html))
+    fun goNextPage(html: String) {
+        (site as Yes24).getBookListFromPage(html)
     }
 }
