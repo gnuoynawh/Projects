@@ -39,8 +39,8 @@
             android:text="가져오기"/>
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/body"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/top"

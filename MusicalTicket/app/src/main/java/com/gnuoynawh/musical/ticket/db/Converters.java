@@ -16,7 +16,7 @@ import java.util.Date;
 public class Converters {
 
     @SuppressLint("SimpleDateFormat")
-    static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    static DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
 
     @TypeConverter
     public static Date fromTimestamp(String value) {

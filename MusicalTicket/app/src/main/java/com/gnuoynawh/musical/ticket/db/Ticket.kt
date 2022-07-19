@@ -37,8 +37,13 @@ data class Ticket(
 
     @ColumnInfo(name = "state")
     @SerializedName("state")
-    var state: String
+    var state: String,
+
+    @NonNull
+    @ColumnInfo(name = "site")
+    @SerializedName("site")
+    var site: String
 
 ) : Serializable {
-    constructor(): this("", "", "", "", "", "", "")
+    constructor(): this("", "", "", "", "", "", "", "")
 }

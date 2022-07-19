@@ -33,13 +33,14 @@ class TicketListFragment(
         return inflater.inflate(R.layout.fragment_ticket_list, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         tvCount = view.findViewById(R.id.tv_count)
-        tvCount.text = "0 건"
-        recyclerView = view.findViewById(R.id.recyclerView)
+        tvCount.text = "${activity.tickets.size} 건"
 
+        recyclerView = view.findViewById(R.id.recyclerView)
         initRecyclerView()
     }
 
@@ -55,9 +56,4 @@ class TicketListFragment(
         recyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
     }
 
-    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-    fun updateData(list: List<Ticket>) {
-        listAdapter.updateData(list)
-        tvCount.text = "${list.size} 건"
-    }
 }

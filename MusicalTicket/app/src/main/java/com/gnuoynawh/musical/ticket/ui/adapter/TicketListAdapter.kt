@@ -39,6 +39,7 @@ class TicketListAdapter(
             .into(holder.ivThumb)
 
         // inform
+        holder.tvSite.text = ticket.site
         holder.tvNumber.text = ticket.number
         holder.tvTitle.text = ticket.title
         holder.tvDate.text = ticket.date
@@ -68,6 +69,7 @@ class TicketListAdapter(
     }
 
     class TicketView(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvSite: AppCompatTextView = itemView.findViewById(R.id.tv_site)
         val ivThumb: AppCompatImageView = itemView.findViewById(R.id.iv_thumb)
         val tvNumber: AppCompatTextView = itemView.findViewById(R.id.tv_number)
         val tvTitle: AppCompatTextView = itemView.findViewById(R.id.tv_title)

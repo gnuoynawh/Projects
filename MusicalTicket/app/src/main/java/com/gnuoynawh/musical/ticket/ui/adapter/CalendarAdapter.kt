@@ -48,11 +48,14 @@ class CalendarAdapter(
             else          Color.GRAY
         )
 
-        // 이미지
+        // 이미지 default
+        holder.ivThumb.setImageResource(0)
+        holder.ivThumbType.setImageResource(0)
         holder.ivThumbType.drawType = TypeImageView.DrawType.DIAGONAL
-        events.forEachIndexed { _, ticket ->
-            if (isSameDay(date, Converters.fromTimestamp(ticket.date))) {
 
+        // 이미지 설정
+        events.forEachIndexed { _, ticket ->
+            if (isSameDay(date, ticket.date)) {
                 if (holder.ivThumb.drawable == null) {
                     Glide.with(context)
                         .load(ticket.thumb)
@@ -83,12 +86,8 @@ class CalendarAdapter(
 
 
     @SuppressLint("SimpleDateFormat")
-    private fun isSameDay(date1: Date, date2: Date?): Boolean {
-        if (date2 == null)
-            return false
-
-        val fmt = SimpleDateFormat("yyyyMMdd")
-        return fmt.format(date1).equals(fmt.format(date2))
+    private fun isSameDay(date1: Date, date2: String): Boolean {
+        return SimpleDateFormat("yyyy.MM.dd").format(date1).equals(date2)
     }
 
     @SuppressLint("NotifyDataSetChanged")

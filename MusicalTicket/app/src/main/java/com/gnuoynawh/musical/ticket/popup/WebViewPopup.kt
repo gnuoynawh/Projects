@@ -79,8 +79,6 @@ class WebViewPopup(
     }
 
     fun onResultWithDB(list: ArrayList<Ticket>) {
-        Log.e("TEST", "onResultWithDB : ${list.size}")
-
         listener?.onResult(list)
     }
 

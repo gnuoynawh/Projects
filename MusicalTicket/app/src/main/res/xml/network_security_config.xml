@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+
+        <!-- 인터파크 -->
+        <domain includeSubdomains="true">interpark.com</domain>
+
+        <!-- 티켓링크 -->
+        <domain includeSubdomains="true">ticketlink.co.kr</domain>
+        <domain includeSubdomains="true">image.toast.com</domain>
+        <domain includeSubdomains="true">tketlink.dn.toastoven.net</domain>
+
+        <!-- 예스24 -->
+        <domain includeSubdomains="true">yes24.com</domain>
+    </domain-config>
+</network-security-config>

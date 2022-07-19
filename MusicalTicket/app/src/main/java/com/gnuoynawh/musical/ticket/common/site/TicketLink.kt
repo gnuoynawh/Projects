@@ -59,6 +59,7 @@ class TicketLink: Site() {
             book?.forEachIndexed { index1, element1 ->
 
                 val ticket = Ticket()
+                ticket.site = getSite()
                 ticket.title = element1.select("h4.tit").text()
 
                 Log.e("TEST", "books [$index1] all = ${element1.text()}")
@@ -72,14 +73,14 @@ class TicketLink: Site() {
 
                     when(title) {
                         "예약번호" -> ticket.number = contents
-                        "관람일시" -> ticket.date = contents
+                        "관람일시" -> ticket.date = getDateFormat(contents)
                         // "공연장소" -> ticket.place = contents
                         "티켓" -> ticket.count = contents
                         "현재상태" -> ticket.state = contents
                     }
                 }
 
-                if(!verifyDuplicate(ticket, list)) {
+                if(!verifyDuplicate(ticket, list) && ticket.title.startsWith("뮤지컬")) {
                     list.add(ticket)
                 }
             }

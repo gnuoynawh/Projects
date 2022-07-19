@@ -45,7 +45,8 @@ class Melon: Site() {
         books?.forEachIndexed { index, element ->
             Log.e("TEST", "books [$index] all = ${element.text()}")
 
-            val ticket: Ticket = Ticket()
+            val ticket = Ticket()
+            ticket.site = getSite()
             ticket.title = element.select("div.tit").text()
             ticket.thumb = element.select("div.thumb img").attr("src")
 
@@ -58,13 +59,13 @@ class Melon: Site() {
 
                 when(title) {
                     "예매번호" -> ticket.number = contents
-                    "관람일" -> ticket.date = contents
+                    "관람일" -> ticket.date = getDateFormat(contents)
                     "공연장소" -> ticket.place = contents
                     "매수" -> ticket.count = contents
                 }
             }
 
-            if(!verifyDuplicate(ticket, list)) {
+            if(!verifyDuplicate(ticket, list) && ticket.title.startsWith("뮤지컬")) {
                 list.add(ticket)
             }
         }

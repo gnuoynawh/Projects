@@ -58,7 +58,8 @@ class InterPark: Site() {
         books?.forEachIndexed { index, element ->
             Log.e("TEST", "books [$index] all = ${element.text()}")
 
-            val ticket: Ticket = Ticket()
+            val ticket = Ticket()
+            ticket.site = getSite()
             ticket.title = element.select("div.nameWrap p").text()
             ticket.count = element.select("div.nameWrap span").text()
             ticket.thumb = element.select("span.img").select("img").attr("src")
@@ -72,12 +73,12 @@ class InterPark: Site() {
 
                 when(title) {
                     "예매번호" -> ticket.number = contents
-                    "관람일시" -> ticket.date = contents
+                    "관람일시" -> ticket.date = getDateFormat(contents)
                     "장소" -> ticket.place = contents
                 }
             }
 
-            if(!verifyDuplicate(ticket, list)) {
+            if(!verifyDuplicate(ticket, list) && ticket.title.startsWith("뮤지컬")) {
                 list.add(ticket)
             }
         }

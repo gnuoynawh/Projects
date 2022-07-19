@@ -14,7 +14,7 @@ interface TicketDao {
     @WorkerThread
     suspend fun insert(vararg ticket: Ticket)
 
-    @Query("select * from TB_TICKET")
+    @Query("select * from TB_TICKET order by date desc")
     fun getAllTickets(): LiveData<List<Ticket>>
 
 }

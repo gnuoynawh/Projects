@@ -1,23 +1,22 @@
 package com.gnuoynawh.musical.ticket.ui
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
-import com.gnuoynawh.exam.ticketcrawlingexam.site.InterPark
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.gnuoynawh.musical.ticket.R
 import com.gnuoynawh.musical.ticket.common.site.Site
 import com.gnuoynawh.musical.ticket.db.MTicketDatabase
 import com.gnuoynawh.musical.ticket.db.Ticket
 import com.gnuoynawh.musical.ticket.popup.SitePopup
 import com.gnuoynawh.musical.ticket.popup.WebViewPopup
+import com.gnuoynawh.musical.ticket.ui.adapter.PagerAdapter
 import com.gnuoynawh.musical.ticket.ui.fragment.CalendarFragment
 import com.gnuoynawh.musical.ticket.ui.fragment.TicketListFragment
 import kotlinx.coroutines.launch
@@ -40,8 +39,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         findViewById(R.id.btn_add)
     }
 
-    private val calendarFragment = CalendarFragment(this).newInstance()
-    private val ticketListFragment = TicketListFragment(this).newInstance()
+    private val pager: ViewPager by lazy {
+        findViewById(R.id.pager)
+    }
+
+    private lateinit var pagerAdapter: PagerAdapter
 
     var ticketData: LiveData<List<Ticket>>? = null
     var tickets: List<Ticket> = ArrayList<Ticket>()
@@ -49,10 +51,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View) {
         when(v.id) {
             R.id.btn_calendar ->
-                changeFragment(calendarFragment)
+                pager.setCurrentItem(0, true)
 
             R.id.btn_list ->
-                changeFragment(ticketListFragment)
+                pager.setCurrentItem(1, true)
 
             R.id.btn_add -> {
                 // 사이트 선택 팝업
@@ -64,10 +66,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                             val popup = WebViewPopup(this@MainActivity, site)
                             popup.setOnCallBackListener(object : WebViewPopup.OnCallBackListener {
                                 override fun onResult(list: ArrayList<Ticket>) {
+                                    Log.e("TEST", "onResult : ${list.size}")
 
                                     // set data
                                     lifecycleScope.launch {
-                                        db?.insert(*list.map { it }.toTypedArray())
+                                        db?.insert(*list.map {
+                                            Log.e("TEST", "insert Ticket = ${it.number}")
+                                            it
+                                        }.toTypedArray())
+
                                         popup.dismiss()
                                     }
                                 }
@@ -89,25 +96,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btnList.setOnClickListener(this)
         btnAdd.setOnClickListener(this)
 
+        pagerAdapter = PagerAdapter(supportFragmentManager)
+        pagerAdapter.addFragment(CalendarFragment(this).newInstance())
+        pagerAdapter.addFragment(TicketListFragment(this).newInstance())
+        pager.adapter = pagerAdapter
+        pager.offscreenPageLimit = pagerAdapter.count
+
         // data
         lifecycleScope.launch {
             ticketData = db?.getAllTickets()
             ticketData?.observe(this@MainActivity) {
-                Log.e("TEST", "size = ${it.size}")
+                Log.e("TEST", "ticketData?.observe size = ${it.size}")
                 tickets = it
 
-                ticketListFragment.updateData(tickets)
+                pagerAdapter.notifyDataSetChanged()
             }
         }
-
-        // init
-        changeFragment(calendarFragment)
-    }
-
-    private fun changeFragment(fragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.body, fragment)
-            .commit()
     }
 }

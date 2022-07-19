@@ -51,4 +51,25 @@ abstract class Site {
             else -> {}
         }
     }
+
+    fun getDateFormat(contents: String): String {
+        if (contents.length < 10)
+            return ""
+
+        return contents
+            .trim()
+            .substring(0, 10)
+            .replace("년", "")
+            .replace("월", "")
+            .replace("일", "")
+    }
+
+    fun getSite(): String {
+        return when(type) {
+            TYPE.INTERPARK -> "인터파크"
+            TYPE.MELON -> "멜론"
+            TYPE.TICKETLINK -> "티켓링크"
+            TYPE.YES24 -> "yes24"
+        }
+    }
 }
