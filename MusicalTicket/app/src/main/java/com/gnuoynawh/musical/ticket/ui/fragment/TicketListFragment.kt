@@ -38,7 +38,7 @@ class TicketListFragment(
 
         tvCount = view.findViewById(R.id.tv_count)
         tvCount.text = "0 건"
-        recyclerView = view.findViewById(R.id.recyclerview)
+        recyclerView = view.findViewById(R.id.recyclerView)
 
         initRecyclerView()
     }

@@ -5,10 +5,11 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.gnuoynawh.exam.ticketcrawlingexam.site.Yes24
 import com.gnuoynawh.musical.ticket.common.site.Site
-import com.gnuoynawh.musical.ticket.ui.WebViewActivity
+import com.gnuoynawh.musical.ticket.popup.WebViewPopup
+import com.gnuoynawh.musical.ticket.ui.MainActivity
 
 class MyJavaScriptInterface(
-    private val activity: WebViewActivity,
+    private val popup: WebViewPopup,
     private val wv: WebView,
     private val site: Site
 ) {
@@ -20,7 +21,7 @@ class MyJavaScriptInterface(
 
     @JavascriptInterface
     fun getBookList(html: String) {
-        activity.onResultWithDB(site.getBookList(html))
+        popup.onResultWithDB(site.getBookList(html))
     }
 
     /**

@@ -10,10 +10,10 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.gnuoynawh.musical.ticket.common.site.Site
-import com.gnuoynawh.musical.ticket.ui.WebViewActivity
+import com.gnuoynawh.musical.ticket.popup.WebViewPopup
 
 class MyWebViewClient(
-    private val activity: WebViewActivity,
+    private val popup: WebViewPopup,
     private val webView: WebView,
     private val site: Site
 ) : WebViewClient() {
@@ -35,13 +35,13 @@ class MyWebViewClient(
         } else if (site.step == Site.STEP.MAIN) {
 
             // 로그인 페이지
-            activity.hideLoading()
+            popup.hideLoading()
             site.nextStep()
 
         } else if (site.step == Site.STEP.LOGIN && checkLoginResult(url)) {
 
             // 로그인 성공 체크 -> 예매내역 페이지로 이동
-            activity.showLoading()
+            popup.showLoading()
             site.goBookListPage(webView)
 
         } else if (site.step == Site.STEP.BOOKLIST) {
@@ -80,7 +80,7 @@ class MyWebViewClient(
 
     @SuppressLint("WebViewClientOnReceivedSslError")
     override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
-        AlertDialog.Builder(activity)
+        AlertDialog.Builder(popup.context)
             .setMessage("이 사이트의 보안 인증서는 신뢰하는 보안 인증서가 아닙니다. 계속하시겠습니까?")
             .setPositiveButton("계속하기") { _, _ ->
                 handler!!.proceed()
