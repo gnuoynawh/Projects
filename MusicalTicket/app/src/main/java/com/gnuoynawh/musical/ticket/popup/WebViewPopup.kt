@@ -58,6 +58,7 @@ class WebViewPopup(
         }
 
         webView.loadUrl(site.mainUrl)
+        hideWebView()
         showLoading()
 
         webView.clearHistory()
@@ -69,13 +70,19 @@ class WebViewPopup(
     }
 
     fun showLoading() {
-        webView.visibility = View.INVISIBLE
         loadingView.visibility = View.VISIBLE
     }
 
     fun hideLoading() {
-        webView.visibility = View.VISIBLE
         loadingView.visibility = View.INVISIBLE
+    }
+
+    fun showWebView() {
+        webView.visibility = View.VISIBLE
+    }
+
+    fun hideWebView() {
+        webView.visibility = View.INVISIBLE
     }
 
     fun onResultWithDB(list: ArrayList<Ticket>) {
@@ -84,11 +91,11 @@ class WebViewPopup(
 
     private var listener: OnCallBackListener? = null
 
-    fun setOnCallBackListener(listener: OnCallBackListener) {
-        this.listener = listener
-    }
-
     interface OnCallBackListener {
         fun onResult(list: ArrayList<Ticket>)
+    }
+
+    fun setOnCallBackListener(listener: OnCallBackListener) {
+        this.listener = listener
     }
 }

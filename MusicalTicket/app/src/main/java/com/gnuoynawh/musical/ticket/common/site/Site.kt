@@ -1,9 +1,13 @@
 package com.gnuoynawh.musical.ticket.common.site
 
+import android.content.Context
 import android.webkit.WebView
+import com.gnuoynawh.musical.ticket.R
 import com.gnuoynawh.musical.ticket.db.Ticket
 
-abstract class Site {
+abstract class Site(
+    val context: Context
+) {
 
     enum class STEP {
         NONE, MAIN, LOGIN, BOOKLIST, PARSE, DONE
@@ -56,12 +60,19 @@ abstract class Site {
         if (contents.length < 10)
             return ""
 
-        return contents
-            .trim()
-            .substring(0, 10)
-            .replace("년", "")
-            .replace("월", "")
-            .replace("일", "")
+        return if (contents.contains("년")) {
+            val year = contents.trim().split("년")
+            val month = year[1].trim().split("월")
+            val day = month[1].trim().split("일")
+
+            context.getString(R.string.ticket_date_value
+                , year[0].toInt()
+                , month[0].toInt()
+                , day[0].toInt()
+            )
+        } else {
+            contents.trim().substring(0, 10)
+        }
     }
 
     fun getSite(): String {

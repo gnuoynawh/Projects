@@ -36,12 +36,14 @@ class MyWebViewClient(
 
             // 로그인 페이지
             popup.hideLoading()
+            popup.showWebView()
             site.nextStep()
 
         } else if (site.step == Site.STEP.LOGIN && checkLoginResult(url)) {
 
             // 로그인 성공 체크 -> 예매내역 페이지로 이동
             popup.showLoading()
+            popup.hideWebView()
             site.goBookListPage(webView)
 
         } else if (site.step == Site.STEP.BOOKLIST) {

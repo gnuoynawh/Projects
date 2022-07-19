@@ -3,8 +3,8 @@ package com.gnuoynawh.musical.ticket.web
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import com.gnuoynawh.exam.ticketcrawlingexam.site.Yes24
 import com.gnuoynawh.musical.ticket.common.site.Site
+import com.gnuoynawh.musical.ticket.common.site.Yes24
 import com.gnuoynawh.musical.ticket.popup.WebViewPopup
 import com.gnuoynawh.musical.ticket.ui.MainActivity
 

@@ -1,5 +1,6 @@
-package com.gnuoynawh.exam.ticketcrawlingexam.site
+package com.gnuoynawh.musical.ticket.common.site
 
+import android.content.Context
 import android.util.Log
 import android.webkit.WebView
 import com.gnuoynawh.musical.ticket.common.site.Site
@@ -7,7 +8,9 @@ import com.gnuoynawh.musical.ticket.db.Ticket
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-class TicketLink: Site() {
+class TicketLink(
+    context: Context
+): Site(context) {
 
     override val type: TYPE
         get() = TYPE.TICKETLINK
