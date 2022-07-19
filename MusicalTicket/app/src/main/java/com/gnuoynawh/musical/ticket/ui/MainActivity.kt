@@ -21,7 +21,6 @@ import com.gnuoynawh.musical.ticket.popup.WebViewPopup
 import com.gnuoynawh.musical.ticket.ui.fragment.CalendarFragment
 import com.gnuoynawh.musical.ticket.ui.fragment.TicketListFragment
 import kotlinx.coroutines.launch
-import java.util.ArrayList
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -49,29 +48,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when(v.id) {
-            R.id.btn_calendar -> changeFragment(calendarFragment)
-            R.id.btn_list -> {
-                Log.e("TEST", "onClick <btn_list>")
-                changeFragment(ticketListFragment)
-            }
-            R.id.btn_add -> {
-                Log.e("TEST", "onClick <btn_add>")
+            R.id.btn_calendar ->
+                changeFragment(calendarFragment)
 
-                // 웹뷰 팝업
-                WebViewPopup(this@MainActivity, InterPark())
-                    .show(supportFragmentManager, "WebViewPopup")
-//                // 사이트 선택 팝업
-//                SitePopup.Builder(this)
-//                    .setOnItemSelectedClickListener(object : SitePopup.OnItemSelectedClickListener {
-//                        override fun onItemClick(v: View, site: Site) {
-//
-//                            // 웹뷰 팝업
-//                            WebViewPopup(this@MainActivity, site)
-//                                .show(supportFragmentManager, "WebViewPopup")
-//                        }
-//                    })
-//                    .build()
-//                    .show()
+            R.id.btn_list ->
+                changeFragment(ticketListFragment)
+
+            R.id.btn_add -> {
+                // 사이트 선택 팝업
+                SitePopup.Builder(this)
+                    .setOnItemSelectedClickListener(object : SitePopup.OnItemSelectedClickListener {
+                        override fun onItemClick(v: View, site: Site) {
+
+                            // 웹뷰 팝업
+                            val popup = WebViewPopup(this@MainActivity, site)
+                            popup.setOnCallBackListener(object : WebViewPopup.OnCallBackListener {
+                                override fun onResult(list: ArrayList<Ticket>) {
+
+                                    // set data
+                                    lifecycleScope.launch {
+                                        db?.insert(*list.map { it }.toTypedArray())
+                                        popup.dismiss()
+                                    }
+                                }
+                            })
+                            popup.show()
+                        }
+                    })
+                    .build()
+                    .show()
             }
         }
     }
@@ -91,12 +96,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 Log.e("TEST", "size = ${it.size}")
                 tickets = it
 
-                //ticketListFragment.updateData(tickets)
+                ticketListFragment.updateData(tickets)
             }
         }
 
         // init
-        // changeFragment(calendarFragment)
+        changeFragment(calendarFragment)
     }
 
     private fun changeFragment(fragment: Fragment) {
@@ -105,5 +110,4 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             .replace(R.id.body, fragment)
             .commit()
     }
-
 }
