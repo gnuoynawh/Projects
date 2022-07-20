@@ -3,6 +3,7 @@ package com.gnuoynawh.musical.ticket.common.site
 import android.content.Context
 import android.util.Log
 import android.webkit.WebView
+import com.gnuoynawh.musical.ticket.common.Constants
 import com.gnuoynawh.musical.ticket.common.site.Site
 import com.gnuoynawh.musical.ticket.db.Ticket
 import org.jsoup.Jsoup
@@ -64,6 +65,7 @@ class TicketLink(
                 val ticket = Ticket()
                 ticket.site = getSite()
                 ticket.title = element1.select("h4.tit").text()
+                ticket.imageType = Constants.IMAGE_TYPE_URL
 
                 Log.e("TEST", "books [$index1] all = ${element1.text()}")
 

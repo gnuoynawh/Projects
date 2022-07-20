@@ -12,9 +12,11 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.gnuoynawh.musical.ticket.R
+import com.gnuoynawh.musical.ticket.common.Constants
 import com.gnuoynawh.musical.ticket.db.Converters
 import com.gnuoynawh.musical.ticket.db.Ticket
 import com.gnuoynawh.musical.ticket.view.TypeImageView
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -56,17 +58,20 @@ class CalendarAdapter(
         // 이미지 설정
         events.forEachIndexed { _, ticket ->
             if (isSameDay(date, ticket.date)) {
-                if (holder.ivThumb.drawable == null) {
-                    Glide.with(context)
-                        .load(ticket.thumb)
-                        .error(R.color.black)
-                        .into(holder.ivThumb)
-                } else {
-                    Glide.with(context)
-                        .load(ticket.thumb)
-                        .error(R.color.black)
-                        .into(holder.ivThumbType)
-                }
+
+                Glide.with(context)
+                    .load(
+                        if (ticket.imageType == Constants.IMAGE_TYPE_FILE)
+                            File(ticket.image)
+                        else
+                            ticket.image
+                    ).error(R.color.black)
+                    .into(
+                        if (holder.ivThumb.drawable == null)
+                            holder.ivThumb
+                        else
+                            holder.ivThumbType
+                    )
 
                 if(!thisMonth) {
                     holder.ivThumb.alpha = 0.5f

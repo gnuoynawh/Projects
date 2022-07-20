@@ -1,16 +1,19 @@
 package com.gnuoynawh.musical.ticket.ui
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.gnuoynawh.musical.ticket.R
 import com.gnuoynawh.musical.ticket.common.site.Site
 import com.gnuoynawh.musical.ticket.db.MTicketDatabase
@@ -24,6 +27,12 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
+    private var permissions = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.CAMERA
+    )
+
     private val db by lazy {
         MTicketDatabase.getDatabase(this)?.getTicket()
     }
@@ -36,6 +45,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         findViewById(R.id.btn_list)
     }
 
+    private val btnGetBookList: AppCompatButton by lazy {
+        findViewById(R.id.btn_get_book_list)
+    }
+
     private val btnAdd: AppCompatButton by lazy {
         findViewById(R.id.btn_add)
     }
@@ -44,11 +57,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         findViewById(R.id.pager)
     }
 
-    private lateinit var pagerAdapter: PagerAdapter
-
     var ticketData: LiveData<List<Ticket>>? = null
     var tickets: List<Ticket> = ArrayList<Ticket>()
 
+    private lateinit var pagerAdapter: PagerAdapter
     private lateinit var sitePopup: SitePopup
 
     override fun onClick(v: View) {
@@ -59,10 +71,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn_list ->
                 pager.setCurrentItem(1, true)
 
-            R.id.btn_add -> {
+            R.id.btn_get_book_list -> {
                 if (!sitePopup.isShowing) {
                     sitePopup.show()
                 }
+            }
+
+            R.id.btn_add -> {
+                val intent = Intent(this@MainActivity, AddTicketActivity::class.java)
+                startActivity(intent)
             }
         }
     }
@@ -74,6 +91,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         // button
         btnCalendar.setOnClickListener(this)
         btnList.setOnClickListener(this)
+        btnGetBookList.setOnClickListener(this)
         btnAdd.setOnClickListener(this)
 
         // viewpager
@@ -109,7 +127,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         })
 
-        // data
+        // 권한체크
+        if (checkPermission()) {
+            initData()
+        }
+    }
+
+    private fun initData() {
         lifecycleScope.launch {
             ticketData = db?.getAllTickets()
             ticketData?.observe(this@MainActivity) {
@@ -120,5 +144,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 pagerAdapter.notifyDataSetChanged()
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (checkPermission()) {
+            initData()
+        }
+    }
+
+    private fun checkPermission(): Boolean {
+        if ((checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            || (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            || (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)) {
+
+            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                || shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
+                || shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                Toast.makeText(this, "이미지를 가져오기 위해서 카메라 및 저장소 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
+
+            requestPermissions(permissions, 2000)
+            return false
+        }
+
+        return true
     }
 }

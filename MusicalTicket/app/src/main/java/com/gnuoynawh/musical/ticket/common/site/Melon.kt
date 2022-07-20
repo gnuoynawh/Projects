@@ -3,6 +3,7 @@ package com.gnuoynawh.musical.ticket.common.site
 import android.content.Context
 import android.util.Log
 import android.webkit.WebView
+import com.gnuoynawh.musical.ticket.common.Constants
 import com.gnuoynawh.musical.ticket.db.Ticket
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -50,7 +51,8 @@ class Melon(
             val ticket = Ticket()
             ticket.site = getSite()
             ticket.title = element.select("div.tit").text()
-            ticket.thumb = element.select("div.thumb img").attr("src")
+            ticket.image = element.select("div.thumb img").attr("src")
+            ticket.imageType = Constants.IMAGE_TYPE_URL
 
             // 상세정보
             val informs = element.select("div.list dl")

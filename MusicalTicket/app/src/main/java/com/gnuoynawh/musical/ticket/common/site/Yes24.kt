@@ -3,6 +3,7 @@ package com.gnuoynawh.musical.ticket.common.site
 import android.content.Context
 import android.util.Log
 import android.webkit.WebView
+import com.gnuoynawh.musical.ticket.common.Constants
 import com.gnuoynawh.musical.ticket.common.site.Site
 import com.gnuoynawh.musical.ticket.db.Ticket
 import org.jsoup.Jsoup
@@ -143,7 +144,8 @@ class Yes24(
             val ticket = Ticket()
             ticket.site = getSite()
             ticket.title = element.select("p.goods_name").text()
-            ticket.thumb = element.select("div.goods_img img").attr("src")
+            ticket.image = element.select("div.goods_img img").attr("src")
+            ticket.imageType = Constants.IMAGE_TYPE_URL
 
             // 상세정보
             val informs = element.select("div.goods_infoUnitArea dl")

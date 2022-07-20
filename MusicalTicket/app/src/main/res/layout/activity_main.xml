@@ -32,11 +32,18 @@
             android:text="리스트"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_add"
+            android:id="@+id/btn_get_book_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="가져오기"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="+"/>
     </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager

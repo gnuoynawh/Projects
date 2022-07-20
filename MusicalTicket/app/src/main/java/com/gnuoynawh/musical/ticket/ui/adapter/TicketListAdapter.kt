@@ -10,8 +10,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.gnuoynawh.musical.ticket.R
+import com.gnuoynawh.musical.ticket.common.Constants
 import com.gnuoynawh.musical.ticket.db.Converters
 import com.gnuoynawh.musical.ticket.db.Ticket
+import java.io.File
 import java.text.SimpleDateFormat
 
 class TicketListAdapter(
@@ -32,10 +34,13 @@ class TicketListAdapter(
     override fun onBindViewHolder(holder: TicketView, position: Int) {
         val ticket: Ticket = list[position]
 
-        // image
         Glide.with(context)
-            .load(ticket.thumb)
-            .error(R.color.black)
+            .load(
+                if (ticket.imageType == Constants.IMAGE_TYPE_FILE)
+                    File(ticket.image)
+                else
+                    ticket.image
+            ).error(R.color.black)
             .into(holder.ivThumb)
 
         // inform

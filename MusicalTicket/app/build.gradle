@@ -12,7 +12,7 @@ android {
         minSdk 29
         targetSdk 32
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
     }
 
     buildTypes {
@@ -75,5 +75,13 @@ dependencies {
     kapt 'androidx.room:room-compiler:2.4.2'
     implementation 'androidx.room:room-ktx:2.4.2'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1' // LifecycleScope
+
+    // camera
+    implementation "androidx.camera:camera-core:1.1.0-beta02"
+    implementation "androidx.camera:camera-camera2:1.1.0-beta02"
+    implementation "androidx.camera:camera-lifecycle:1.1.0-beta02"
+    implementation "androidx.camera:camera-view:1.1.0-beta02"
+    implementation "androidx.camera:camera-extensions:1.1.0-beta02"
+
 
 }

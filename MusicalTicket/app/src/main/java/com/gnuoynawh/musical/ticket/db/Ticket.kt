@@ -19,9 +19,13 @@ data class Ticket(
     @SerializedName("title")
     var title: String,
 
-    @ColumnInfo(name = "thumb")
-    @SerializedName("thumb")
-    var thumb: String,
+    @ColumnInfo(name = "imageType")
+    @SerializedName("imageType")
+    var imageType: String,
+
+    @ColumnInfo(name = "image")
+    @SerializedName("image")
+    var image: String,
 
     @ColumnInfo(name = "place")
     @SerializedName("place")
@@ -45,5 +49,5 @@ data class Ticket(
     var site: String
 
 ) : Serializable {
-    constructor(): this("", "", "", "", "", "", "", "")
+    constructor(): this("", "", "", "", "", "", "", "", "")
 }

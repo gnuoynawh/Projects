@@ -3,6 +3,7 @@ package com.gnuoynawh.musical.ticket.common.site
 import android.content.Context
 import android.util.Log
 import android.webkit.WebView
+import com.gnuoynawh.musical.ticket.common.Constants
 import com.gnuoynawh.musical.ticket.common.site.Site
 import com.gnuoynawh.musical.ticket.db.Ticket
 import org.jsoup.Jsoup
@@ -65,7 +66,8 @@ class InterPark(
             ticket.site = getSite()
             ticket.title = element.select("div.nameWrap p").text()
             ticket.count = element.select("div.nameWrap span").text()
-            ticket.thumb = element.select("span.img").select("img").attr("src")
+            ticket.image = element.select("span.img").select("img").attr("src")
+            ticket.imageType = Constants.IMAGE_TYPE_URL
 
             // 상세정보
             val informs = element.select("span.prodInfoWrap").select("dl")
