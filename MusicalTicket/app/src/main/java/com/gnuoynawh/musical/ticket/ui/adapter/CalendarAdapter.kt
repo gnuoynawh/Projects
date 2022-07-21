@@ -78,7 +78,7 @@ class CalendarAdapter(
                     holder.ivThumbType.alpha = 0.5f
                 }
 
-                holder.tvDay.setTextColor(Color.WHITE)
+                // holder.tvDay.setTextColor(Color.WHITE)
             }
         }
 
