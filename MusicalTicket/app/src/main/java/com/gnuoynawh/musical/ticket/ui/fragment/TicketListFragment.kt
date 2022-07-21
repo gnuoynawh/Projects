@@ -1,6 +1,7 @@
 package com.gnuoynawh.musical.ticket.ui.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gnuoynawh.musical.ticket.R
 import com.gnuoynawh.musical.ticket.ui.MainActivity
+import com.gnuoynawh.musical.ticket.ui.TicketModifyActivity
 import com.gnuoynawh.musical.ticket.ui.adapter.TicketListAdapter
 
 
@@ -49,6 +51,10 @@ class TicketListFragment(
         listAdapter.setOnItemClickListener(object: TicketListAdapter.OnItemClickListener{
             override fun onClick(v: View, position: Int) {
                 Toast.makeText(activity, "click! ${activity.tickets[position].title}", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(activity, TicketModifyActivity::class.java)
+                intent.putExtra("ticket", activity.tickets[position])
+                startActivity(intent)
             }
         })
 
@@ -59,25 +65,16 @@ class TicketListFragment(
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    val swipeDeleteCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
+    private val swipeDeleteCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
             return false
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
             val position = viewHolder.adapterPosition
             val ticket = listAdapter.getData(position)
             activity.deleteData(ticket.number)
 
         }
-
-        
     }
-
-
 }

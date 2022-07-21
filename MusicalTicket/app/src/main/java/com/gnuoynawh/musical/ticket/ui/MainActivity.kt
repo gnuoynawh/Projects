@@ -1,14 +1,12 @@
 package com.gnuoynawh.musical.ticket.ui
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.lifecycle.LiveData
@@ -78,7 +76,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btn_add -> {
-                val intent = Intent(this@MainActivity, AddTicketActivity::class.java)
+                val intent = Intent(this@MainActivity, TicketAddActivity::class.java)
                 startActivity(intent)
             }
         }

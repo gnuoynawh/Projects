@@ -26,8 +26,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.AddTicketActivity"/>
         <activity android:name=".ui.CameraActivity"/>
+        <activity android:name=".ui.TicketAddActivity"/>
+        <activity android:name=".ui.TicketModifyActivity"/>
     </application>
 
 </manifest>

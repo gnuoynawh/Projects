@@ -8,7 +8,7 @@ import java.io.Serializable
 import java.util.*
 
 @Entity(tableName = "TB_TICKET", primaryKeys = ["number"])
-data class Ticket(
+data class Ticket (
 
     @NonNull
     @ColumnInfo(name = "number")
