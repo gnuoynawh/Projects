@@ -63,6 +63,10 @@ class TicketListAdapter(
         this.notifyDataSetChanged()
     }
 
+    public fun getData(position: Int): Ticket {
+        return list[position]
+    }
+
     interface OnItemClickListener {
         fun onClick(v: View, position: Int)
     }

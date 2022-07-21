@@ -17,4 +17,7 @@ interface TicketDao {
     @Query("select * from TB_TICKET order by date desc")
     fun getAllTickets(): LiveData<List<Ticket>>
 
+    @Query("delete from TB_TICKET where number = :number")
+    suspend fun delete(number: String)
+
 }

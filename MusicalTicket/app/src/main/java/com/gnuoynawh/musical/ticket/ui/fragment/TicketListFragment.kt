@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gnuoynawh.musical.ticket.R
-import com.gnuoynawh.musical.ticket.db.Ticket
 import com.gnuoynawh.musical.ticket.ui.MainActivity
-import com.gnuoynawh.musical.ticket.ui.adapter.CalendarAdapter
 import com.gnuoynawh.musical.ticket.ui.adapter.TicketListAdapter
+
 
 class TicketListFragment(
     val activity: MainActivity
@@ -54,6 +54,30 @@ class TicketListFragment(
 
         recyclerView.adapter = listAdapter
         recyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+
+        val itemTouchHelper = ItemTouchHelper(swipeDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
+
+    val swipeDeleteCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            val position = viewHolder.adapterPosition
+            val ticket = listAdapter.getData(position)
+            activity.deleteData(ticket.number)
+
+        }
+
+        
+    }
+
 
 }

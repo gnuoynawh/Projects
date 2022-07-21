@@ -146,6 +146,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    fun deleteData(number: String) {
+        lifecycleScope.launch {
+            db?.delete(number)
+            Toast.makeText(this@MainActivity, "삭제 완료 : $number", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
