@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MusicalTicket</string>
+
+
+    <string name="ticket_date_value">%04d.%02d.%02d</string>
+
+    <!-- calendar -->
+    <string name="calendar_title">%04d년%02d월</string>
+    <string name="sunday">일</string>
+    <string name="monday">월</string>
+    <string name="tuesday">화</string>
+    <string name="wednesday">수</string>
+    <string name="thursday">목</string>
+    <string name="friday">금</string>
+    <string name="saturday">토</string>
+</resources>
