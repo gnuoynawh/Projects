@@ -1,13 +1,17 @@
 [versions]
 agp = "8.4.2"
 kotlin = "1.9.0"
-coreKtx = "1.15.0"
+coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
 composeBom = "2023.08.00"
+
+camerax_version = "1.3.0"
+mlkit_version = "16.0.1"
+glide_version = "4.15.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -24,6 +28,16 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax_version" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax_version" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax_version" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax_version" }
+
+google-mlkit = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkit_version" }
+google-mlkit-korean = { group = "com.google.mlkit", name = "text-recognition-korean", version.ref = "mlkit_version" }
+
+github-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide_version" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
