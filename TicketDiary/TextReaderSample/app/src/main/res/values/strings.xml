@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TextReaderSample</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="re_take">Re Take</string>
 </resources>
